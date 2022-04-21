@@ -1,9 +1,6 @@
 package com.smoothstack.BatchMicroservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -19,4 +16,13 @@ public class Card {
 
 //    @ManyToOne
     private User user;
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "id=" + id +
+                ", number='" + number + '\'' +
+                ", userId=" + user.getId() +
+                '}';
+    }
 }
