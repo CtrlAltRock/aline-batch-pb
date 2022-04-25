@@ -6,23 +6,20 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Entity
 public class Card {
 
-//    @Id
     private Long id;
 
     private String number;
 
-//    @ManyToOne
-    private User user;
+    private Long userId;
 
     @Override
     public String toString() {
         return "Card{" +
                 "id=" + id +
                 ", number='" + number + '\'' +
-                ", userId=" + user.getId() +
+                ", userId=" + userId +
                 '}';
     }
 }
