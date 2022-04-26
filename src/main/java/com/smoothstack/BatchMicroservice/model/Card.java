@@ -1,22 +1,16 @@
 package com.smoothstack.BatchMicroservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Entity
+@ToString
 public class Card {
 
-//    @Id
     private Long id;
-
     private String number;
+    private Long userId;
 
-//    @ManyToOne
-    private User user;
 }

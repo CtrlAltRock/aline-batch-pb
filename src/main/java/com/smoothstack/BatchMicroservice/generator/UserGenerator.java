@@ -5,28 +5,32 @@ import com.smoothstack.BatchMicroservice.cache.UserCache;
 import com.smoothstack.BatchMicroservice.model.User;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 public class UserGenerator {
 
     private final Faker faker = new Faker();
-    private final UserCache userCache = new UserCache();
-    private User user;
 
-    public User findUserOrGenerate(Long userId){
-        if(userCache.getGeneratedUser(userId) == null){
-            generateUser(userId);
-            userCache.addGeneratedUser(userId, user);
-        }
-        return userCache.getGeneratedUser(userId);
+    private static UserGenerator userGeneratorInstance = null;
+
+    public static UserGenerator getInstance() {
+        if(userGeneratorInstance == null) userGeneratorInstance= new UserGenerator();
+        return userGeneratorInstance;
     }
 
-    private synchronized void generateUser(Long userId) {
+    public synchronized User generateUser(Long userId, UserCache uc) {
         String firstName= faker.name().firstName();
-        String lastName= faker.name().firstName();
-        user = new User();
+        String lastName= faker.name().lastName();
+        User user = new User();
         user.setId(userId);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setEmail(firstName + "." + lastName + "@random.com");
+        user.setEmail(firstName + "." + lastName + "@smoothceeplusplus.com");
+        user.setCards(new ArrayList<>());
+        user.setTransactions(new ArrayList<>());
+        uc.addGeneratedUser(userId, user);
+        return user;
     }
+
 }

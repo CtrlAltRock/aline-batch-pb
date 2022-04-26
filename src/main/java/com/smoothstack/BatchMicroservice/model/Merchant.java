@@ -1,27 +1,28 @@
 package com.smoothstack.BatchMicroservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Entity
+@ToString
+@XmlRootElement(name="merchant")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Merchant {
 
-//    @Id
-    private Long id;
-
-//    @OneToMany
+    private String id;
+    private Long uniqueKey;
     private List<Transaction> transactions;
 
     private String name;
     private String city;
     private String state;
     private String zip;
+    private String mcc;
 }
