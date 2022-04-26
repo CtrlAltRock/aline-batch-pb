@@ -4,6 +4,8 @@ import com.smoothstack.BatchMicroservice.cache.CardCache;
 import com.smoothstack.BatchMicroservice.model.Card;
 import com.vangogiel.luhnalgorithms.LuhnAlgorithms;
 
+import java.util.HashSet;
+
 public class CardGenerator {
 
     private static CardGenerator cardGeneratorInstance = null;
@@ -13,6 +15,9 @@ public class CardGenerator {
     public static CardGenerator getInstance(){
         if(cardGeneratorInstance == null) cardGeneratorInstance = new CardGenerator();
         return cardGeneratorInstance;
+    }
+    public synchronized void instantiateCard(Long userId, CardCache cardCache) {
+        cardCache.getGeneratedCards().put(userId, new HashSet<>());
     }
 
     public synchronized void addGeneratedCard(Long userId, CardCache cc){
@@ -24,12 +29,12 @@ public class CardGenerator {
         card.setId(incrementId);
         card.setNumber(Long.toString(LuhnAlgorithms.generateRandomLuhn(16)));
         card.setUserId(userId);
-        incrementId = incrementId+1;
-        System.out.println(card);
+        incrementId += 1;
         return card;
     }
 
     private boolean validCard(String card){
         return LuhnAlgorithms.isValid(card);
     }
+
 }

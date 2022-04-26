@@ -1,7 +1,8 @@
 package com.smoothstack.BatchMicroservice.config;
 
 import com.smoothstack.BatchMicroservice.model.Transaction;
-import com.smoothstack.BatchMicroservice.processor.TestProcessor2;
+import com.smoothstack.BatchMicroservice.processor.CardProcessor;
+import com.smoothstack.BatchMicroservice.processor.MerchantProcessor;
 import com.smoothstack.BatchMicroservice.processor.UserProcessor;
 import com.smoothstack.BatchMicroservice.writer.XMLItemWriter;
 import org.springframework.batch.core.Job;
@@ -9,7 +10,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
@@ -34,9 +34,6 @@ public class BatchConfig {
     @Autowired
     JobBuilderFactory jobsFactory;
 
-    @Autowired
-    JobLauncher jobLauncher;
-
     @Bean
     public FlatFileItemReader<Transaction> csvReader() {
         return new FlatFileItemReaderBuilder<Transaction>()
@@ -56,7 +53,7 @@ public class BatchConfig {
     public CompositeItemProcessor<Transaction, Object> compositeItemProcessor() throws Exception {
         CompositeItemProcessor<Transaction, Object> compositeProcessor = new CompositeItemProcessor<>();
 
-        List<ItemProcessor<Transaction, Object>> processors = Arrays.asList(new UserProcessor(), new TestProcessor2());
+        List<ItemProcessor<Transaction, Object>> processors = Arrays.asList(new UserProcessor(), new CardProcessor(), new MerchantProcessor());
 
         compositeProcessor.setDelegates(processors);
         compositeProcessor.afterPropertiesSet();
@@ -72,7 +69,7 @@ public class BatchConfig {
         threadPoolTaskExecutor.afterPropertiesSet();
 
         return stepsFactory.get("transaction step")
-                .<Transaction, Object>chunk(10000)
+                .<Transaction, Object>chunk(1000)
                 .reader(csvReader())
                 .processor(compositeItemProcessor())
                 .writer(new XMLItemWriter())

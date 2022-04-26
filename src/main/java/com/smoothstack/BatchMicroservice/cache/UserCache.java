@@ -11,7 +11,8 @@ public class UserCache {
 
     private final HashMap<Long, User> generatedUsers = new HashMap<>();
     private final Map<Long, User> syncGeneratedUsers = Collections.synchronizedMap(generatedUsers);
-    private final Set<Long> seenUsers = new HashSet<>();
+    private final HashSet<Long> seenUsers = new HashSet<>();
+    private final Set<Long> syncSeenUsers = Collections.synchronizedSet(seenUsers);
     private static UserCache userCacheInstance = null;
 
     public static UserCache getInstance() {
@@ -32,11 +33,11 @@ public class UserCache {
     }
 
     public Set<Long> getSeenUsers(){
-        return seenUsers;
+        return syncSeenUsers;
     }
 
     public void setSeenUser(Long id){
-        seenUsers.add(id);
+        syncSeenUsers.add(id);
     }
 
     public User findUserOrGenerate(Long userId){
