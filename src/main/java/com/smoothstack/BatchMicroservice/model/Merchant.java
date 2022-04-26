@@ -2,9 +2,6 @@ package com.smoothstack.BatchMicroservice.model;
 
 import lombok.*;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @Getter
@@ -12,8 +9,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@XmlRootElement(name="merchant")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Merchant {
 
     private String id;
@@ -21,8 +16,6 @@ public class Merchant {
     private List<Transaction> transactions;
 
     private String name;
-    private String city;
-    private String state;
-    private String zip;
+    private Long locationId;
     private String mcc;
 }

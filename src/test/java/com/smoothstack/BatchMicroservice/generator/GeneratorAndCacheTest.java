@@ -1,8 +1,6 @@
 package com.smoothstack.BatchMicroservice.generator;
 
-import com.smoothstack.BatchMicroservice.cache.CardCache;
-import com.smoothstack.BatchMicroservice.cache.MerchantCache;
-import com.smoothstack.BatchMicroservice.cache.UserCache;
+import com.smoothstack.BatchMicroservice.cache.*;
 import com.smoothstack.BatchMicroservice.model.Merchant;
 import com.smoothstack.BatchMicroservice.model.Transaction;
 import com.smoothstack.BatchMicroservice.model.User;
@@ -17,6 +15,8 @@ public class GeneratorAndCacheTest {
     private final UserCache userCache = UserCache.getInstance();
     private final CardCache cardCache = CardCache.getInstance();
     private final MerchantCache merchantCache = MerchantCache.getInstance();
+    private final LocationCache locationCache = LocationCache.getInstance();
+    private final StateCache stateCache = StateCache.getInstance();
 
     @Test
     public void correctUserGenerationTest(){
@@ -55,5 +55,28 @@ public class GeneratorAndCacheTest {
         assertEquals(merchant.getName(), merchantCache.getGeneratedMerchants().get(t.getMerchant_name()).getName());
         merchantCache.getGeneratedMerchants().remove(t.getMerchant_name());
         assertTrue(merchantCache.getGeneratedMerchants().isEmpty());
+    }
+
+    @Test
+    public void correctLocationAndStateTest(){
+        Transaction t = new Transaction();
+        t.setMerchant_name("1092875012421");
+        t.setMerchant_state("VA");
+        t.setMerchant_city("Arlington");
+        t.setMerchant_zip("20350");
+        t.setMcc("5111");
+        assertTrue(merchantCache.getGeneratedMerchants().isEmpty());
+        assertTrue(locationCache.getGeneratedLocations().isEmpty());
+        assertTrue(stateCache.getGeneratedStates().isEmpty());
+        assertSame(merchantCache.findOrGenerateMerchant(t).getClass(), Merchant.class);
+        assertEquals(1, merchantCache.getGeneratedMerchants().size());
+        assertEquals(1, locationCache.getGeneratedLocations().size());
+        assertEquals(1, stateCache.getGeneratedStates().size());
+        stateCache.getGeneratedStates().remove(t.getMerchant_state());
+        locationCache.getGeneratedLocations().remove(t.getMerchant_zip());
+        merchantCache.getGeneratedMerchants().remove(t.getMerchant_name());
+        assertTrue(merchantCache.getGeneratedMerchants().isEmpty());
+        assertTrue(locationCache.getGeneratedLocations().isEmpty());
+        assertTrue(stateCache.getGeneratedStates().isEmpty());
     }
 }
