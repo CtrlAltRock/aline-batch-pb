@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class Card {
-
     private Long id;
     private String number;
     private Long userId;

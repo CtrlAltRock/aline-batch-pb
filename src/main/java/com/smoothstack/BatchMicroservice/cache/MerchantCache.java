@@ -46,7 +46,7 @@ public class MerchantCache {
         return syncSeenMerchants;
     }
 
-    public void setSeenUser(String k) {
+    public void setSeenMerchant(String k) {
         syncSeenMerchants.add(k);
     }
 }
