@@ -6,8 +6,7 @@ import com.smoothstack.BatchMicroservice.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class GeneratorAndCacheTest {
@@ -18,7 +17,7 @@ public class GeneratorAndCacheTest {
     @Test
     public void correctUserGenerationTest(){
         assertTrue(userCache.getGeneratedUsers().isEmpty());
-        userCache.findUserOrGenerate(0L);
+        assertSame(userCache.findUserOrGenerate(0L).getClass(), User.class);
         assertEquals(1, userCache.getGeneratedUsers().size());
         User userOrGenerate = userCache.findUserOrGenerate(0L);
         assertEquals(userOrGenerate.getFirstName(), userCache.getGeneratedUser(0L).getFirstName());
