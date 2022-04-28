@@ -29,6 +29,7 @@ public class LocationGenerator {
         location.setUniqueKey(incrementId);
         incrementId += 1;
         lc.addGeneratedLocation(location);
+        System.out.println(location);
         return location;
     }
 }

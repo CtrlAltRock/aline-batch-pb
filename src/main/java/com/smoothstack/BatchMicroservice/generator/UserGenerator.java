@@ -30,6 +30,7 @@ public class UserGenerator {
         user.setCards(new ArrayList<>());
         user.setTransactions(new ArrayList<>());
         uc.addGeneratedUser(userId, user);
+        System.out.println(user);
         return user;
     }
 

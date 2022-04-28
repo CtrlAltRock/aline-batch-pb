@@ -3,7 +3,9 @@ package com.smoothstack.BatchMicroservice.config;
 import com.smoothstack.BatchMicroservice.model.Transaction;
 import com.smoothstack.BatchMicroservice.processor.CardProcessor;
 import com.smoothstack.BatchMicroservice.processor.MerchantProcessor;
+import com.smoothstack.BatchMicroservice.processor.TransactionSkipPolicy;
 import com.smoothstack.BatchMicroservice.processor.UserProcessor;
+import com.smoothstack.BatchMicroservice.tasklet.XmlWriterTasklet;
 import com.smoothstack.BatchMicroservice.writer.XMLItemWriter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -16,6 +18,7 @@ import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.support.CompositeItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -34,31 +37,18 @@ public class BatchConfig {
     @Autowired
     JobBuilderFactory jobsFactory;
 
+    @Value("${input.path}")
+    private String inputPath;
+
+    @Value("${output.path}")
+    private String outputPath;
+
     @Bean
-    public FlatFileItemReader<Transaction> csvReader() {
-        return new FlatFileItemReaderBuilder<Transaction>()
-                .name("csvflatfileitemreader")
-                .resource(new FileSystemResource("C:\\Users\\Patrick\\Downloads\\credit_card\\transactions\\transactions\\card_transaction.v1.csv"))
-                .linesToSkip(1)
-                .delimited()
-                .delimiter(",")
-                .names("user", "card", "year", "month", "day", "time", "amount", "method", "merchant_name", "merchant_city", "merchant_state", "merchant_zip", "mcc", "errors", "fraud")
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
-                    setTargetType(Transaction.class);
-                }})
+    public Job transactionJob() throws Exception {
+        return jobsFactory.get("transactionJob")
+                .start(threadedStep())
+                .next(xmlWriterStep())
                 .build();
-    }
-
-    @Bean
-    public CompositeItemProcessor<Transaction, Object> compositeItemProcessor() throws Exception {
-        CompositeItemProcessor<Transaction, Object> compositeProcessor = new CompositeItemProcessor<>();
-
-        List<ItemProcessor<Transaction, Object>> processors = Arrays.asList(new UserProcessor(), new CardProcessor(), new MerchantProcessor());
-
-        compositeProcessor.setDelegates(processors);
-        compositeProcessor.afterPropertiesSet();
-
-        return compositeProcessor;
     }
 
     @Bean
@@ -71,6 +61,10 @@ public class BatchConfig {
         return stepsFactory.get("transaction step")
                 .<Transaction, Object>chunk(1000)
                 .reader(csvReader())
+                .faultTolerant()
+                .retryLimit(1)
+                .retry(Exception.class)
+                .skipPolicy(new TransactionSkipPolicy())
                 .processor(compositeItemProcessor())
                 .writer(new XMLItemWriter())
                 .taskExecutor(threadPoolTaskExecutor)
@@ -78,9 +72,42 @@ public class BatchConfig {
     }
 
     @Bean
-    public Job transactionJob() throws Exception {
-        return jobsFactory.get("transactionJob")
-                .start(threadedStep())
+    public FlatFileItemReader<Transaction> csvReader() {
+        System.out.println(inputPath);
+        return new FlatFileItemReaderBuilder<Transaction>()
+                .name("csvflatfileitemreader")
+                .resource(new FileSystemResource(inputPath))
+                .linesToSkip(1)
+                .delimited()
+                .delimiter(",")
+                .names("user", "card", "year", "month", "day", "time", "amount", "method",
+                        "merchant_name", "merchant_city", "merchant_state", "merchant_zip",
+                        "mcc", "errors", "fraud")
+                .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
+                    setTargetType(Transaction.class);
+                }})
+                .build();
+    }
+
+    @Bean
+    public CompositeItemProcessor<Transaction, Object> compositeItemProcessor() throws Exception {
+        CompositeItemProcessor<Transaction, Object> compositeProcessor
+                = new CompositeItemProcessor<>();
+
+        List<ItemProcessor<Transaction, Object>> processors = Arrays.asList(
+                new UserProcessor(), new CardProcessor(), new MerchantProcessor());
+
+        compositeProcessor.setDelegates(processors);
+        compositeProcessor.afterPropertiesSet();
+
+        return compositeProcessor;
+    }
+
+
+    @Bean
+    public Step xmlWriterStep(){
+        return  stepsFactory.get("xmlWriterStep")
+                .tasklet(new XmlWriterTasklet(outputPath))
                 .build();
     }
 }

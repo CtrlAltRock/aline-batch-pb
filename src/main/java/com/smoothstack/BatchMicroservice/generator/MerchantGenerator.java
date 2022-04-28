@@ -31,6 +31,7 @@ public class MerchantGenerator {
         merchant.setMcc(item.getMcc());
         merchant.setTransactions(new ArrayList<>());
         mc.addGeneratedMerchant(item.getMerchant_name(), merchant);
+        System.out.println(merchant);
         return merchant;
     }
 }

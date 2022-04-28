@@ -20,6 +20,7 @@ public class StateGenerator {
         state.setUniqueKey(incrementId);
         incrementId+=1;
         stateCache.addGeneratedState(state);
+        System.out.println(state);
         return state;
     }
 
