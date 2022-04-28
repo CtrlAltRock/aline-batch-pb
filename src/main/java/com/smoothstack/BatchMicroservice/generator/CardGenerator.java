@@ -30,6 +30,7 @@ public class CardGenerator {
         card.setNumber(Long.toString(LuhnAlgorithms.generateRandomLuhn(16)));
         card.setUserId(userId);
         incrementId += 1;
+        System.out.println(card);
         return card;
     }
 

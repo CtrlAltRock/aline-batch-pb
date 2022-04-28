@@ -6,10 +6,16 @@ import com.smoothstack.BatchMicroservice.model.Transaction;
 import com.smoothstack.BatchMicroservice.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@TestPropertySource(
+        properties = {
+                "input.path = C:/Users/Patrick/Downloads/test/test2.csv",
+                "output.path = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/"
+        })
 public class GeneratorAndCacheTest {
 
     private final UserCache userCache = UserCache.getInstance();
