@@ -1,4 +1,4 @@
-package com.smoothstack.BatchMicroservice.cache;
+package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.StateGenerator;
 import com.smoothstack.BatchMicroservice.model.State;
@@ -7,18 +7,16 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class StateCache {
+public class StateMap {
     private final HashMap<String, State> generatedStates = new HashMap<>();
     private final Map<String, State> syncGeneratedStates = Collections.synchronizedMap(generatedStates);
-    private final Set<String> seenStates = new HashSet<>();
-    private final Set<String> syncSeenStates = Collections.synchronizedSet(seenStates);
 
     private static final class StateCacheInstanceHolder {
-        static final StateCache stateCacheInstance = new StateCache();
+        static final StateMap STATE_MAP_INSTANCE = new StateMap();
     }
 
-    public static StateCache getInstance(){
-        return StateCacheInstanceHolder.stateCacheInstance;
+    public static StateMap getInstance(){
+        return StateCacheInstanceHolder.STATE_MAP_INSTANCE;
     }
 
     public synchronized State findOrGenerateState(String merchant_state) {
@@ -39,13 +37,6 @@ public class StateCache {
 
     public void addGeneratedState(State state){
         syncGeneratedStates.put(state.getId(), state);
-    }
-    public Set<String> getSeenStates() {
-        return syncSeenStates;
-    }
-
-    public void setSeenState(String state){
-        syncSeenStates.add(state);
     }
 
     public State getGeneratedState(String id){

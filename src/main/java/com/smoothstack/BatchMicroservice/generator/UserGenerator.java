@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.generator;
 
 import com.github.javafaker.Faker;
-import com.smoothstack.BatchMicroservice.cache.UserCache;
+import com.smoothstack.BatchMicroservice.maps.UserMap;
 import com.smoothstack.BatchMicroservice.model.User;
 import org.springframework.stereotype.Component;
 
@@ -12,14 +12,15 @@ public class UserGenerator {
 
     private final Faker faker = new Faker();
 
-    private static UserGenerator userGeneratorInstance = null;
-
+    private static final class UserGeneratorInstanceHolder {
+        static final UserGenerator userGeneratorInstance = new UserGenerator();
+    }
     public static UserGenerator getInstance() {
-        if(userGeneratorInstance == null) userGeneratorInstance= new UserGenerator();
-        return userGeneratorInstance;
+        return UserGeneratorInstanceHolder.userGeneratorInstance;
     }
 
-    public synchronized User generateUser(Long userId, UserCache uc) {
+    public synchronized User generateUser(Long userId, UserMap uc) {
+//        TODO - Optimize with on call generator
         String firstName= faker.name().firstName();
         String lastName= faker.name().lastName();
         User user = new User();
@@ -30,7 +31,7 @@ public class UserGenerator {
         user.setCards(new ArrayList<>());
         user.setTransactions(new ArrayList<>());
         uc.addGeneratedUser(userId, user);
-        System.out.println(user);
+//        System.out.println(user);
         return user;
     }
 

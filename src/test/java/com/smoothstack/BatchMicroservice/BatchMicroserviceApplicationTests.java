@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.is;
 @ContextConfiguration(classes = {BatchConfig.class})
 @TestPropertySource(
 		properties = {
-				"input.path = C:/Users/Patrick/Downloads/test/test2.csv",
+				"input.path = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/resources/TestData/test2.csv",
 				"output.path = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/"
 })
 class BatchMicroserviceApplicationTests {
@@ -48,10 +48,6 @@ class BatchMicroserviceApplicationTests {
 
 	@Test
 	public void givenReferenceOutput_whenJobExecuted_thenSuccess() throws Exception {
-//		// given
-//		FileSystemResource expectedResult = new FileSystemResource(EXPECTED_OUTPUT);
-//		FileSystemResource actualResult = new FileSystemResource(TEST_OUTPUT);
-
 		// when
 		JobExecution jobExecution = jobLauncherTestUtils.launchJob();
 		JobInstance actualJobInstance = jobExecution.getJobInstance();
@@ -60,16 +56,10 @@ class BatchMicroserviceApplicationTests {
 		// then
 		assertThat(actualJobInstance.getJobName(), is("transactionJob"));
 		assertThat(actualJobExitStatus.getExitCode(), is("COMPLETED"));
-//		AssertFile.assertFileEquals(expectedResult, actualResult);
 	}
 
 	@Test
 	public void givenReferenceOutput_whenStep1Executed_thenSuccess() throws Exception {
-
-		// given
-//		FileSystemResource expectedResult = new FileSystemResource(EXPECTED_OUTPUT);
-//		FileSystemResource actualResult = new FileSystemResource(TEST_OUTPUT);
-
 		// when
 		JobExecution jobExecution = jobLauncherTestUtils.launchStep("transaction step");
 		Collection<StepExecution> actualStepExecutions = jobExecution.getStepExecutions();
@@ -78,12 +68,10 @@ class BatchMicroserviceApplicationTests {
 		// then
 		assertThat(actualStepExecutions.size(), is(1));
 		assertThat(actualJobExitStatus.getExitCode(), is("COMPLETED"));
-//		AssertFile.assertFileEquals(expectedResult, actualResult);
 	}
 
 	@Test
 	public void whenStep2Executed_thenSuccess() {
-
 		// when
 		JobExecution jobExecution = jobLauncherTestUtils.launchStep("xmlWriterStep");
 		Collection<StepExecution> actualStepExecutions = jobExecution.getStepExecutions();
@@ -92,7 +80,6 @@ class BatchMicroserviceApplicationTests {
 		// then
 		assertThat(actualStepExecutions.size(), is(1));
 		assertThat(actualExitStatus.getExitCode(), is("COMPLETED"));
-//		actualStepExecutions.forEach(stepExecution -> {assertThat(stepExecution.getWriteCount(), is(8));});
 	}
 
 }

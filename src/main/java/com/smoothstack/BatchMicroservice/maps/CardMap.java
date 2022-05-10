@@ -1,4 +1,4 @@
-package com.smoothstack.BatchMicroservice.cache;
+package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.CardGenerator;
 import com.smoothstack.BatchMicroservice.model.Card;
@@ -7,26 +7,18 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class CardCache {
+public class CardMap {
 
     private final HashMap<Long, HashSet<Card>> generatedCards = new HashMap<>();
     private final Map<Long, HashSet<Card>> syncGeneratedCards = Collections.synchronizedMap(generatedCards);
-    private final HashSet<Long> seenCards = new HashSet<>();
-    private final Set<Long> syncSeenUsers = Collections.synchronizedSet(seenCards);
 
-    private static CardCache cardCacheInstance = null;
 
-    public static CardCache getInstance(){
-        if(cardCacheInstance == null) cardCacheInstance = new CardCache();
-        return cardCacheInstance;
+    private static final class CardMapInstanceHolder {
+        static final CardMap cardMapInstance = new CardMap();
     }
 
-    public Set<Long> getSeenCards(){
-        return syncSeenUsers;
-    }
-
-    public void setSeenCards(Long id){
-        syncSeenUsers.add(id);
+    public static CardMap getInstance(){
+        return CardMapInstanceHolder.cardMapInstance;
     }
 
     public synchronized void addGeneratedCard(Long userId, Card card){

@@ -9,5 +9,4 @@ public class BatchMicroserviceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BatchMicroserviceApplication.class, args);
 	}
-
 }
