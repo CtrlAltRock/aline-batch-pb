@@ -1,4 +1,4 @@
-package com.smoothstack.BatchMicroservice.cache;
+package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.UserGenerator;
 import com.smoothstack.BatchMicroservice.model.User;
@@ -7,17 +7,18 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class UserCache {
+public class UserMap {
 
     private final HashMap<Long, User> generatedUsers = new HashMap<>();
     private final Map<Long, User> syncGeneratedUsers = Collections.synchronizedMap(generatedUsers);
-    private final HashSet<Long> seenUsers = new HashSet<>();
-    private final Set<Long> syncSeenUsers = Collections.synchronizedSet(seenUsers);
-    private static UserCache userCacheInstance = null;
+    private final HashMap<Long, Integer> insufficientBalanceByUser = new HashMap<>();
 
-    public static UserCache getInstance() {
-        if(userCacheInstance == null) userCacheInstance = new UserCache();
-        return userCacheInstance;
+    private static final class UserMapInstanceHolder {
+        static final UserMap userMapInstance = new UserMap();
+    }
+
+    public static UserMap getInstance() {
+        return UserMapInstanceHolder.userMapInstance;
     }
 
     public synchronized void addGeneratedUser(Long userId, User user){
@@ -32,12 +33,18 @@ public class UserCache {
         return syncGeneratedUsers;
     }
 
-    public Set<Long> getSeenUsers(){
-        return syncSeenUsers;
+    public HashMap<Long, Integer> getInsufficientBalanceByUser(){
+        return insufficientBalanceByUser;
     }
 
-    public void setSeenUser(Long id){
-        syncSeenUsers.add(id);
+    public void setInsufficientBalanceByUser(Long id){
+        if(!insufficientBalanceByUser.containsKey(id)) {
+            insufficientBalanceByUser.put(id, 1);
+        } else {
+            Integer integer = insufficientBalanceByUser.get(id);
+            integer = integer + 1;
+            insufficientBalanceByUser.replace(id, integer);
+        }
     }
 
     public User findUserOrGenerate(Long userId){

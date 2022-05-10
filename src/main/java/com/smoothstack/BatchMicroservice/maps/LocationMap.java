@@ -1,4 +1,4 @@
-package com.smoothstack.BatchMicroservice.cache;
+package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.LocationGenerator;
 import com.smoothstack.BatchMicroservice.model.Location;
@@ -8,25 +8,16 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class LocationCache {
+public class LocationMap {
     private final HashMap<String, Location> generatedLocations = new HashMap<>();
     private final Map<String, Location> syncGeneratedLocations = Collections.synchronizedMap(generatedLocations);
-    private final Set<String> seenLocations = new HashSet<>();
-    private final Set<String> syncSeenLocations = Collections.synchronizedSet(seenLocations);
 
-    private static LocationCache locationCacheInstance = null;
-
-    public static LocationCache getInstance(){
-        if(locationCacheInstance == null) locationCacheInstance = new LocationCache();
-        return locationCacheInstance;
+    private static final class LocationMapInstanceHolder {
+        static final LocationMap locationMapInstance = new LocationMap();
     }
 
-    public Set<String> getSeenLocations(){
-        return syncSeenLocations;
-    }
-
-    public void setSeenLocations(String zip){
-        syncSeenLocations.add(zip);
+    public static LocationMap getInstance(){
+        return LocationMapInstanceHolder.locationMapInstance;
     }
 
     public Map<String, Location> getGeneratedLocations() {
