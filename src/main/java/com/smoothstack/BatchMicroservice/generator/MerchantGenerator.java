@@ -3,7 +3,7 @@ package com.smoothstack.BatchMicroservice.generator;
 import com.github.javafaker.Faker;
 import com.smoothstack.BatchMicroservice.maps.LocationMap;
 import com.smoothstack.BatchMicroservice.maps.MerchantMap;
-import com.smoothstack.BatchMicroservice.model.Merchant;
+import com.smoothstack.BatchMicroservice.model.generation.Merchant;
 import com.smoothstack.BatchMicroservice.model.Transaction;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,6 @@ public class MerchantGenerator {
         merchant.setId(item.getMerchant_name());
         merchant.setUniqueKey(incrementId);
         incrementId+=1;
-        merchant.setName(faker.company().name());
         merchant.setLocationId(locationMap.findOrGenerateLocation(item).getUniqueKey());
         merchant.setMcc(item.getMcc());
         merchant.setTransactions(new ArrayList<>());

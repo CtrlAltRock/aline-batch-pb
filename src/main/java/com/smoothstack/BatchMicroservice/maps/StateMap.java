@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.StateGenerator;
-import com.smoothstack.BatchMicroservice.model.State;
+import com.smoothstack.BatchMicroservice.model.generation.State;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

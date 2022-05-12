@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.MerchantGenerator;
-import com.smoothstack.BatchMicroservice.model.Merchant;
+import com.smoothstack.BatchMicroservice.model.generation.Merchant;
 import com.smoothstack.BatchMicroservice.model.Transaction;
 
 import java.util.*;

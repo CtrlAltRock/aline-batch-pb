@@ -1,9 +1,9 @@
 package com.smoothstack.BatchMicroservice;
 
 import com.smoothstack.BatchMicroservice.maps.*;
-import com.smoothstack.BatchMicroservice.model.Merchant;
+import com.smoothstack.BatchMicroservice.model.generation.Merchant;
 import com.smoothstack.BatchMicroservice.model.Transaction;
-import com.smoothstack.BatchMicroservice.model.User;
+import com.smoothstack.BatchMicroservice.model.generation.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -58,7 +58,7 @@ public class GeneratorAndCacheTest {
         assertSame(merchantMap.findOrGenerateMerchant(t).getClass(), Merchant.class);
         assertEquals(1, merchantMap.getGeneratedMerchants().size());
         Merchant merchant = merchantMap.findOrGenerateMerchant(t);
-        assertEquals(merchant.getName(), merchantMap.getGeneratedMerchants().get(t.getMerchant_name()).getName());
+        assertEquals(merchant.getId(), merchantMap.getGeneratedMerchants().get(t.getMerchant_name()).getId());
         merchantMap.getGeneratedMerchants().remove(t.getMerchant_name());
         assertTrue(merchantMap.getGeneratedMerchants().isEmpty());
     }

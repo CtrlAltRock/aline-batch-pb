@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<states><state>
+  <id></id>
+  <uniqueKey>1</uniqueKey>
+</state><state>
+  <id>HI</id>
+  <uniqueKey>18</uniqueKey>
+</state><state>
+  <id>DE</id>
+  <uniqueKey>51</uniqueKey>
+</state><state>
+  <id>TX</id>
+  <uniqueKey>6</uniqueKey>
+</state><state>
+  <id>MA</id>
+  <uniqueKey>17</uniqueKey>
+</state><state>
+  <id>MD</id>
+  <uniqueKey>29</uniqueKey>
+</state><state>
+  <id>IA</id>
+  <uniqueKey>5</uniqueKey>
+</state><state>
+  <id>ME</id>
+  <uniqueKey>36</uniqueKey>
+</state><state>
+  <id>ID</id>
+  <uniqueKey>46</uniqueKey>
+</state><state>
+  <id>MI</id>
+  <uniqueKey>12</uniqueKey>
+</state><state>
+  <id>UT</id>
+  <uniqueKey>10</uniqueKey>
+</state><state>
+  <id>MN</id>
+  <uniqueKey>21</uniqueKey>
+</state><state>
+  <id>MO</id>
+  <uniqueKey>4</uniqueKey>
+</state><state>
+  <id>IL</id>
+  <uniqueKey>3</uniqueKey>
+</state><state>
+  <id>IN</id>
+  <uniqueKey>43</uniqueKey>
+</state><state>
+  <id>MS</id>
+  <uniqueKey>32</uniqueKey>
+</state><state>
+  <id>MT</id>
+  <uniqueKey>38</uniqueKey>
+</state><state>
+  <id>AK</id>
+  <uniqueKey>49</uniqueKey>
+</state><state>
+  <id>VA</id>
+  <uniqueKey>25</uniqueKey>
+</state><state>
+  <id>AL</id>
+  <uniqueKey>28</uniqueKey>
+</state><state>
+  <id>AR</id>
+  <uniqueKey>22</uniqueKey>
+</state><state>
+  <id>NC</id>
+  <uniqueKey>35</uniqueKey>
+</state><state>
+  <id>ND</id>
+  <uniqueKey>34</uniqueKey>
+</state><state>
+  <id>NE</id>
+  <uniqueKey>2</uniqueKey>
+</state><state>
+  <id>RI</id>
+  <uniqueKey>44</uniqueKey>
+</state><state>
+  <id>AZ</id>
+  <uniqueKey>24</uniqueKey>
+</state><state>
+  <id>NH</id>
+  <uniqueKey>47</uniqueKey>
+</state><state>
+  <id>NJ</id>
+  <uniqueKey>7</uniqueKey>
+</state><state>
+  <id>VT</id>
+  <uniqueKey>30</uniqueKey>
+</state><state>
+  <id>NM</id>
+  <uniqueKey>41</uniqueKey>
+</state><state>
+  <id>FL</id>
+  <uniqueKey>11</uniqueKey>
+</state><state>
+  <id>NV</id>
+  <uniqueKey>9</uniqueKey>
+</state><state>
+  <id>WA</id>
+  <uniqueKey>13</uniqueKey>
+</state><state>
+  <id>NY</id>
+  <uniqueKey>8</uniqueKey>
+</state><state>
+  <id>SC</id>
+  <uniqueKey>15</uniqueKey>
+</state><state>
+  <id>SD</id>
+  <uniqueKey>50</uniqueKey>
+</state><state>
+  <id>WI</id>
+  <uniqueKey>31</uniqueKey>
+</state><state>
+  <id>OH</id>
+  <uniqueKey>14</uniqueKey>
+</state><state>
+  <id>GA</id>
+  <uniqueKey>20</uniqueKey>
+</state><state>
+  <id>OK</id>
+  <uniqueKey>40</uniqueKey>
+</state><state>
+  <id>CA</id>
+  <uniqueKey>0</uniqueKey>
+</state><state>
+  <id>WV</id>
+  <uniqueKey>48</uniqueKey>
+</state><state>
+  <id>WY</id>
+  <uniqueKey>42</uniqueKey>
+</state><state>
+  <id>OR</id>
+  <uniqueKey>23</uniqueKey>
+</state><state>
+  <id>KS</id>
+  <uniqueKey>33</uniqueKey>
+</state><state>
+  <id>CO</id>
+  <uniqueKey>19</uniqueKey>
+</state><state>
+  <id>KY</id>
+  <uniqueKey>27</uniqueKey>
+</state><state>
+  <id>CT</id>
+  <uniqueKey>16</uniqueKey>
+</state><state>
+  <id>PA</id>
+  <uniqueKey>26</uniqueKey>
+</state><state>
+  <id>LA</id>
+  <uniqueKey>45</uniqueKey>
+</state><state>
+  <id>TN</id>
+  <uniqueKey>39</uniqueKey>
+</state><state>
+  <id>DC</id>
+  <uniqueKey>37</uniqueKey>
+</state></states>

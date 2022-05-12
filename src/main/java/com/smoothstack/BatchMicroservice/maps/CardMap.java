@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.CardGenerator;
-import com.smoothstack.BatchMicroservice.model.Card;
+import com.smoothstack.BatchMicroservice.model.generation.Card;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

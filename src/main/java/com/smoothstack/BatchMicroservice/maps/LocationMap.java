@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.LocationGenerator;
-import com.smoothstack.BatchMicroservice.model.Location;
+import com.smoothstack.BatchMicroservice.model.generation.Location;
 import com.smoothstack.BatchMicroservice.model.Transaction;
 import org.springframework.stereotype.Component;
 

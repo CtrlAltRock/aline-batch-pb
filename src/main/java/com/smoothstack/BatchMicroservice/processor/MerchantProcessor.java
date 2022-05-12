@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.processor;
 
 import com.smoothstack.BatchMicroservice.maps.MerchantMap;
-import com.smoothstack.BatchMicroservice.model.Merchant;
+import com.smoothstack.BatchMicroservice.model.generation.Merchant;
 import com.smoothstack.BatchMicroservice.model.Transaction;
 import org.springframework.batch.item.ItemProcessor;
 

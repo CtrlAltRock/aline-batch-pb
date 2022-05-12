@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.generator;
 
 import com.smoothstack.BatchMicroservice.maps.StateMap;
-import com.smoothstack.BatchMicroservice.model.State;
+import com.smoothstack.BatchMicroservice.model.generation.State;
 
 
 public class StateGenerator {

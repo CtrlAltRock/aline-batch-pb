@@ -2,7 +2,7 @@ package com.smoothstack.BatchMicroservice.generator;
 
 import com.github.javafaker.Faker;
 import com.smoothstack.BatchMicroservice.maps.UserMap;
-import com.smoothstack.BatchMicroservice.model.User;
+import com.smoothstack.BatchMicroservice.model.generation.User;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
