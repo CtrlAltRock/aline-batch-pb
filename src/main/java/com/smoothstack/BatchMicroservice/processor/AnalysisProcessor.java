@@ -16,6 +16,9 @@ public class AnalysisProcessor implements ItemProcessor<Transaction, Object> {
         if(item.getFraud().equalsIgnoreCase("yes")){
             tMap.setFraudByYear(item.getYear());
         }
+
+        // transaction types
+        tMap.setTransactionType(item.getMethod());
         return item;
     }
 }

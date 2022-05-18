@@ -50,6 +50,7 @@ public class AnalysisTest {
                 t1.setMerchant_name("1234567898");
                 t1.setCard(0L);
                 t1.setAmount("$24.64");
+                t1.setMethod("Swipe");
 
                 t2.setYear(2022);
                 t2.setFraud("No");
@@ -58,6 +59,7 @@ public class AnalysisTest {
                 t2.setMerchant_name("1234567899");
                 t2.setCard(2L);
                 t2.setAmount("$543.34");
+                t2.setMethod("Chip");
 
                 t3.setYear(2022);
                 t3.setFraud("Yes");
@@ -66,6 +68,7 @@ public class AnalysisTest {
                 t3.setMerchant_name("1234567890");
                 t3.setCard(1L);
                 t3.setAmount("$25.25");
+                t3.setMethod("Online");
 
                 t4.setYear(2022);
                 t4.setFraud("No");
@@ -74,6 +77,7 @@ public class AnalysisTest {
                 t4.setMerchant_name("1234567890");
                 t4.setCard(1L);
                 t4.setAmount("$25.25");
+                t4.setMethod("Online");
 
                 ts.add(t1);
                 ts.add(t2);
@@ -91,7 +95,7 @@ public class AnalysisTest {
 
 
         @Test
-        public void correctYear() throws Exception {
+        public void correctYearAndType() throws Exception {
                 List<Transaction> transactions = setUp();
                 transactions.forEach(t -> {
                         try {
@@ -100,10 +104,14 @@ public class AnalysisTest {
                                 throw new RuntimeException(e);
                         }
                 });
+                // fraud
                 assertEquals(2, tMap.getSyncTransactionByYear().size());
                 assertEquals(1, tMap.getSyncTransactionByYear().get(2021));
                 assertEquals(1, tMap.getSyncFraudByYear().size());
                 assertEquals(1, tMap.getSyncFraudByYear().get(2022));
+
+                // type
+                assertEquals(3, tMap.getTransactionType().size());
         }
 
         @Test
