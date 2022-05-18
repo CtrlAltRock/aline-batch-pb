@@ -2,6 +2,7 @@ package com.smoothstack.BatchMicroservice.tasklet.analysis;
 
 import com.smoothstack.BatchMicroservice.generator.FileGenerator;
 import com.smoothstack.BatchMicroservice.maps.MerchantMap;
+import com.smoothstack.BatchMicroservice.model.Transaction;
 import com.smoothstack.BatchMicroservice.model.analysis.Top5RecurringTransaction;
 import com.thoughtworks.xstream.XStream;
 import org.springframework.batch.core.StepContribution;
@@ -33,23 +34,31 @@ public class Top5RecurringWriter implements Tasklet {
         XStream xs = new XStream();
         StringBuilder sb = new StringBuilder();
         xs.alias("Merchant", Top5RecurringTransaction.class);
+        xs.alias("Transaction", Transaction.class);
+        xs.omitField(Top5RecurringTransaction.class, "amount");
+        xs.omitField(Top5RecurringTransaction.class, "userId");
+        xs.omitField(Top5RecurringTransaction.class, "cardIndex");
         FileWriter fw = new FileWriter(path+"Merchant-Top5RecurringTransactions.xml", true);
         merchantMap.getRecurringTransaction().forEach((k,v)->{
-            List<Map.Entry<Float, Integer>> collect = v.entrySet()
+            List<Map.Entry<String, Integer>> collect = v.entrySet()
                     .stream()
                     .filter(n -> n.getValue() > 1)
-                    .filter(i -> i.getKey() > 0)
                     .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                     .limit(5)
                     .collect(Collectors.toList());
             if(!collect.isEmpty()){
                 Top5RecurringTransaction t5 = new Top5RecurringTransaction();
-                HashMap<Float, Integer> t5re =  new HashMap<>();
+                HashMap<Transaction, Integer> t5re =  new HashMap<>();
                 collect.forEach(z -> {
-                    t5re.put(z.getKey(), z.getValue());
+                    String[] s = z.getKey().split(" ");
+                    Transaction t = new Transaction();
+                    t.setAmount(s[1]);
+                    t.setUser(Long.valueOf(s[3]));
+                    t.setCard(Long.valueOf(s[5]));
+                    t5re.put(t, z.getValue());
                 });
                 t5.setMerchantId(k);
-                t5.setTop5recurring(t5re);
+                t5.setOccurrences(t5re);
                 sb.append(xs.toXML(t5));
             }
         });

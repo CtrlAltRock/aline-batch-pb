@@ -11,6 +11,10 @@ public class StateMap {
     private final HashMap<String, State> generatedStates = new HashMap<>();
     private final Map<String, State> syncGeneratedStates = Collections.synchronizedMap(generatedStates);
 
+    public void clearAll() {
+        syncGeneratedStates.clear();
+    }
+
     private static final class StateCacheInstanceHolder {
         static final StateMap STATE_MAP_INSTANCE = new StateMap();
     }

@@ -1,10 +1,10 @@
 package com.smoothstack.BatchMicroservice.maps;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TransactionMap {
+
+
 
     private static final class TransactionMapInstanceHolder {
         static final TransactionMap transactionMapInstance = new TransactionMap();
@@ -18,6 +18,8 @@ public class TransactionMap {
     private final Map<Integer, Integer> syncTransactionByYear = Collections.synchronizedMap(transactionByYear);
     private final HashMap<Integer, Integer> fraudByYear = new HashMap<>();
     private final Map<Integer, Integer> syncFraudByYear = Collections.synchronizedMap(fraudByYear);
+    private final Set<String> transactionType = new HashSet<>();
+    private final Set<String> syncTransactionType = Collections.synchronizedSet(transactionType);
 
     public Map<Integer, Integer> getSyncTransactionByYear() {
         return syncTransactionByYear;
@@ -45,5 +47,18 @@ public class TransactionMap {
                 syncFraudByYear.replace(year, syncFraudByYear.get(year)+1);
             }
         }
+    }
+
+    public void setTransactionType(String method) {
+        syncTransactionType.add(method);
+    }
+
+    public Set<String> getTransactionType(){
+        return syncTransactionType;
+    }
+
+    public void clearAll() {
+        syncTransactionByYear.clear();
+        syncFraudByYear.clear();
     }
 }

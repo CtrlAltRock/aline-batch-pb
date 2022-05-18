@@ -12,6 +12,10 @@ public class LocationMap {
     private final HashMap<String, Location> generatedLocations = new HashMap<>();
     private final Map<String, Location> syncGeneratedLocations = Collections.synchronizedMap(generatedLocations);
 
+    public void clearAll() {
+        syncGeneratedLocations.clear();
+    }
+
     private static final class LocationMapInstanceHolder {
         static final LocationMap locationMapInstance = new LocationMap();
     }

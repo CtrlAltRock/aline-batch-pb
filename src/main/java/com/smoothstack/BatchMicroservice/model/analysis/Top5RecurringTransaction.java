@@ -1,5 +1,6 @@
 package com.smoothstack.BatchMicroservice.model.analysis;
 
+import com.smoothstack.BatchMicroservice.model.Transaction;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,24 @@ import java.util.HashMap;
 public class Top5RecurringTransaction {
     @XStreamAlias("merchant-id")
     private String merchantId;
+    private String amount;
+    private Long userId;
+    private Long cardIndex;
 
-    @XStreamAlias("occurrences")
-    private HashMap<Float, Integer> top5recurring;
+    private HashMap<Transaction, Integer> occurrences;
+
+
+    public Top5RecurringTransaction(Transaction item){
+        this.merchantId = item.getMerchant_name();
+        this.amount = item.getAmount();
+        this.userId = item.getUser();
+        this.cardIndex = item.getCard();
+    }
+
+    @Override
+    public String toString() {
+        return "amount: " + amount +
+                " userId: " + userId +
+                " cardIndex: " + cardIndex;
+    }
 }

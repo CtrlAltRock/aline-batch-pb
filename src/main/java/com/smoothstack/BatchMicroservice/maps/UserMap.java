@@ -13,6 +13,11 @@ public class UserMap {
     private final Map<Long, User> syncGeneratedUsers = Collections.synchronizedMap(generatedUsers);
     private final HashMap<Long, Integer> insufficientBalanceByUser = new HashMap<>();
 
+    public void clearAll() {
+        syncGeneratedUsers.clear();
+        insufficientBalanceByUser.clear();
+    }
+
     private static final class UserMapInstanceHolder {
         static final UserMap userMapInstance = new UserMap();
     }

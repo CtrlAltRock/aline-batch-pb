@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<InsufficientBalance>
-    <InsufficientOnce>
-        <numberOfUsers>2000</numberOfUsers>
-        <numberOfInsufficientUsers>1825</numberOfInsufficientUsers>
-        <percentage>91.25</percentage>
-    </InsufficientOnce>
-</InsufficientBalance>

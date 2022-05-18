@@ -12,6 +12,10 @@ public class CardMap {
     private final HashMap<Long, HashSet<Card>> generatedCards = new HashMap<>();
     private final Map<Long, HashSet<Card>> syncGeneratedCards = Collections.synchronizedMap(generatedCards);
 
+    public void clearAll() {
+        syncGeneratedCards.clear();
+    }
+
 
     private static final class CardMapInstanceHolder {
         static final CardMap cardMapInstance = new CardMap();

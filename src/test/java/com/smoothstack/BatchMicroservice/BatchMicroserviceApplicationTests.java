@@ -24,11 +24,10 @@ import static org.hamcrest.Matchers.is;
 @TestPropertySource(
 		properties = {
 				"input.path = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/resources/TestData/test2.csv",
-				"output.path = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/"
+				"output.path.generation = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/Generation/",
+				"output.path.analysis = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/Analysis/"
 })
-class BatchMicroserviceApplicationTests {
-
-	private static final String EXPECTED_OUTPUT = "src/test/resources/output/expected-output.json";
+class BatchTests {
 
 	@Autowired
 	private JobLauncherTestUtils jobLauncherTestUtils;
@@ -39,11 +38,6 @@ class BatchMicroserviceApplicationTests {
 	@After
 	public void cleanUp() {
 		jobRepositoryTestUtils.removeJobExecutions();
-	}
-
-	private JobParameters defaultJobParameters() {
-		JobParametersBuilder paramsBuilder = new JobParametersBuilder();
-		return paramsBuilder.toJobParameters();
 	}
 
 	@Test
