@@ -10,7 +10,7 @@ public class MerchantProcessor implements ItemProcessor<Transaction, Object> {
     private static final MerchantMap MERCHANT_MAP = MerchantMap.getInstance();
 
     @Override
-    public Object process(Transaction item) throws Exception {
+    public Object process(Transaction item){
         MERCHANT_MAP.findOrGenerateMerchant(item);
         Top5RecurringTransaction t5re = new Top5RecurringTransaction(item);
         MERCHANT_MAP.setRecurringTransaction(item.getMerchant_name(), t5re.toString());

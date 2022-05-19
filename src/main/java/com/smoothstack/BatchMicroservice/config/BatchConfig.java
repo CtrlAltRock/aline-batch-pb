@@ -2,6 +2,7 @@ package com.smoothstack.BatchMicroservice.config;
 
 import com.smoothstack.BatchMicroservice.model.Transaction;
 import com.smoothstack.BatchMicroservice.processor.*;
+import com.smoothstack.BatchMicroservice.tasklet.CleanUpTasklet;
 import com.smoothstack.BatchMicroservice.tasklet.analysis.*;
 import com.smoothstack.BatchMicroservice.tasklet.generation.*;
 import com.smoothstack.BatchMicroservice.writer.XMLItemWriter;
@@ -62,6 +63,7 @@ public class BatchConfig {
         return new FlowBuilder<SimpleFlow>("mainFlow")
                 .start(threadedStep())
                 .next(xmlWriterFlow())
+                .next(cleanUpStep())
                 .build();
     }
 
@@ -100,8 +102,8 @@ public class BatchConfig {
     @Bean
     public TaskExecutor getTaskExecutor(){
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(6);
-        threadPoolTaskExecutor.setMaxPoolSize(6);
+        threadPoolTaskExecutor.setCorePoolSize(12);
+        threadPoolTaskExecutor.setMaxPoolSize(12);
         threadPoolTaskExecutor.afterPropertiesSet();
 
         return threadPoolTaskExecutor;
@@ -141,6 +143,13 @@ public class BatchConfig {
                 .build();
     }
 
+    private Step cleanUpStep() {
+        return stepsFactory.get("cleanUpStep")
+                .tasklet(new CleanUpTasklet())
+                .build();
+    }
+    
+    // flows and steps
     @Bean
     public Flow userWriterFlow(){
         return new FlowBuilder<SimpleFlow>("userWriterFlow")

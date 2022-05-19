@@ -9,6 +9,7 @@ import com.smoothstack.BatchMicroservice.processor.AnalysisProcessor;
 import com.smoothstack.BatchMicroservice.processor.MerchantProcessor;
 import com.smoothstack.BatchMicroservice.processor.UserProcessor;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -36,7 +37,12 @@ public class AnalysisTest {
         private final UserProcessor userProcessor = new UserProcessor();
         private final MerchantProcessor merchantProcessor = new MerchantProcessor();
 
-        public List<Transaction> setUp(){
+        @BeforeEach
+        public void setUp(){
+                tMap.clearAll();
+                userMap.clearAll();
+                merchantMap.clearAll();
+
                 List<Transaction> ts = new ArrayList<>();
                 Transaction t1 = new Transaction();
                 Transaction t2 = new Transaction();
@@ -84,66 +90,18 @@ public class AnalysisTest {
                 ts.add(t3);
                 ts.add(t4);
 
-                return ts;
+                ts.forEach(t -> {
+                        userProcessor.process(t);
+                        merchantProcessor.process(t);
+                        analysisProcessor.process(t);
+                });
         }
 
         @AfterEach
         public void cleanup(){
                 tMap.clearAll();
                 userMap.clearAll();
-        }
-
-
-        @Test
-        public void correctYearAndType() throws Exception {
-                List<Transaction> transactions = setUp();
-                transactions.forEach(t -> {
-                        try {
-                                analysisProcessor.process(t);
-                        } catch (Exception e) {
-                                throw new RuntimeException(e);
-                        }
-                });
-                // fraud
-                assertEquals(2, tMap.getSyncTransactionByYear().size());
-                assertEquals(1, tMap.getSyncTransactionByYear().get(2021));
-                assertEquals(1, tMap.getSyncFraudByYear().size());
-                assertEquals(1, tMap.getSyncFraudByYear().get(2022));
-
-                // type
-                assertEquals(3, tMap.getTransactionType().size());
-        }
-
-        @Test
-        public void insufficientBalance(){
-                List<Transaction> transactions = setUp();
-                transactions.forEach(t -> {
-                        try {
-                                userProcessor.process(t);
-                        } catch (Exception e) {
-                                throw new RuntimeException(e);
-                        }
-                });
-                assertEquals(2, userMap.getInsufficientBalanceByUser().size());
-                assertEquals(1, userMap.getInsufficientBalanceByUser().get(1L));
-                assertEquals(2, userMap.getInsufficientBalanceByUser().get(2L));
-        }
-
-        @Test
-        public void uniqueMerchantAndRecurringTransaction(){
-                List<Transaction> transactions = setUp();
-                transactions.forEach(t -> {
-                        try {
-                                merchantProcessor.process(t);
-                        } catch (Exception e) {
-                                throw new RuntimeException(e);
-                        }
-                });
-                // unique
-                assertEquals(3, merchantMap.getGeneratedMerchants().size());
-                // recurring
-                assertEquals(3 , merchantMap.getRecurringTransaction().size());
-                assertEquals(2, merchantMap.getRecurringTransaction().get("1234567890").get(getTop5().toString()));
+                merchantMap.clearAll();
         }
 
         public Top5RecurringTransaction getTop5(){
@@ -156,6 +114,42 @@ public class AnalysisTest {
                 t4.setCard(1L);
                 t4.setAmount("$25.25");
                 return new Top5RecurringTransaction(t4);
+        }
+
+        @Test
+        public void correctYearAndType() throws Exception {
+
+                // fraud
+                assertEquals(2, tMap.getSyncTransactionByYear().size());
+                assertEquals(1, tMap.getSyncTransactionByYear().get(2021));
+                assertEquals(1, tMap.getSyncFraudByYear().size());
+                assertEquals(1, tMap.getSyncFraudByYear().get(2022));
+
+                // type
+                assertEquals(3, tMap.getTransactionType().size());
+
+                // top 10 largest
+                System.out.println(tMap.getSyncTop10LargestTransaction());
+                assertEquals(4, tMap.getSyncTop10LargestTransaction().size());
+        }
+
+        @Test
+        public void insufficientBalance(){
+
+                assertEquals(2, userMap.getInsufficientBalanceByUser().size());
+                assertEquals(1, userMap.getInsufficientBalanceByUser().get(1L));
+                assertEquals(2, userMap.getInsufficientBalanceByUser().get(2L));
+        }
+
+        @Test
+        public void uniqueMerchantAndRecurringTransaction(){
+
+                // unique
+                assertEquals(3, merchantMap.getGeneratedMerchants().size());
+
+                // recurring
+                assertEquals(3 , merchantMap.getRecurringTransaction().size());
+                assertEquals(2, merchantMap.getRecurringTransaction().get("1234567890").get(getTop5().toString()));
         }
 
 }
