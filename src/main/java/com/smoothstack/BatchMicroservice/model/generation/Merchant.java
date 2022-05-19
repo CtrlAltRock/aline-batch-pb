@@ -1,5 +1,6 @@
-package com.smoothstack.BatchMicroservice.model;
+package com.smoothstack.BatchMicroservice.model.generation;
 
+import com.smoothstack.BatchMicroservice.model.Transaction;
 import lombok.*;
 
 import java.util.List;
@@ -14,7 +15,6 @@ public class Merchant {
     private String id;
     private Long uniqueKey;
     private List<Transaction> transactions;
-    private String name;
     private Long locationId;
     private String mcc;
 

@@ -1,4 +1,4 @@
-package com.smoothstack.BatchMicroservice.model;
+package com.smoothstack.BatchMicroservice.model.generation;
 
 import lombok.*;
 

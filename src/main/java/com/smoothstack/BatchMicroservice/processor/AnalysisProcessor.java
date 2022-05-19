@@ -8,13 +8,27 @@ public class AnalysisProcessor implements ItemProcessor<Transaction, Object> {
 
     private static final TransactionMap tMap = TransactionMap.getInstance();
 
+    private static final String YES = "Yes";
+
     @Override
-    public Object process(Transaction item) throws Exception {
+    public Object process(Transaction item) {
         // set up number of transactions by year
         tMap.setTransactionByYear(item.getYear());
+
         // set up error by insufficient balance
-        if(item.getFraud().equalsIgnoreCase("yes")){
+        if (item.getFraud().equalsIgnoreCase(YES)) {
             tMap.setFraudByYear(item.getYear());
+        }
+
+        // transaction types
+        tMap.setTransactionType(item.getMethod());
+
+        // top 10 largest
+        tMap.setTopTenLargest(item);
+
+        // top 5 by zipcode
+        if (!item.getMerchant_zip().isBlank()) {
+            tMap.setZipcodeTransaction(item);
         }
         return item;
     }

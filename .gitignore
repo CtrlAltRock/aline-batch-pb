@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Processed out files ###
+/src/main/ProcessedOutFiles/Analysis/*.xml
+/src/main/ProcessedOutFiles/Generation/*.xml
+/src/test/ProcessedOutTestFiles/Analysis/*.xml
+/src/test/ProcessedOutTestFiles/Generation/*.xml

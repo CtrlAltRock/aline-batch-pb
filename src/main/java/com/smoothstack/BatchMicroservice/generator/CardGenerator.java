@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.generator;
 
 import com.smoothstack.BatchMicroservice.maps.CardMap;
-import com.smoothstack.BatchMicroservice.model.Card;
+import com.smoothstack.BatchMicroservice.model.generation.Card;
 import com.vangogiel.luhnalgorithms.LuhnAlgorithms;
 
 import java.util.HashSet;

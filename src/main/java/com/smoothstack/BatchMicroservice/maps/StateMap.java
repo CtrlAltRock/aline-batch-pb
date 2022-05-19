@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.StateGenerator;
-import com.smoothstack.BatchMicroservice.model.State;
+import com.smoothstack.BatchMicroservice.model.generation.State;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -10,6 +10,10 @@ import java.util.*;
 public class StateMap {
     private final HashMap<String, State> generatedStates = new HashMap<>();
     private final Map<String, State> syncGeneratedStates = Collections.synchronizedMap(generatedStates);
+
+    public void clearAll() {
+        syncGeneratedStates.clear();
+    }
 
     private static final class StateCacheInstanceHolder {
         static final StateMap STATE_MAP_INSTANCE = new StateMap();

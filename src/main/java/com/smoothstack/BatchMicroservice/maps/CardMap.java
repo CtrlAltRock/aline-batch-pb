@@ -1,7 +1,7 @@
 package com.smoothstack.BatchMicroservice.maps;
 
 import com.smoothstack.BatchMicroservice.generator.CardGenerator;
-import com.smoothstack.BatchMicroservice.model.Card;
+import com.smoothstack.BatchMicroservice.model.generation.Card;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -11,6 +11,10 @@ public class CardMap {
 
     private final HashMap<Long, HashSet<Card>> generatedCards = new HashMap<>();
     private final Map<Long, HashSet<Card>> syncGeneratedCards = Collections.synchronizedMap(generatedCards);
+
+    public void clearAll() {
+        syncGeneratedCards.clear();
+    }
 
 
     private static final class CardMapInstanceHolder {

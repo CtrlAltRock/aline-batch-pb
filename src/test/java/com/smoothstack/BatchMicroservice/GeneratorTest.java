@@ -1,9 +1,10 @@
 package com.smoothstack.BatchMicroservice;
 
 import com.smoothstack.BatchMicroservice.maps.*;
-import com.smoothstack.BatchMicroservice.model.Merchant;
 import com.smoothstack.BatchMicroservice.model.Transaction;
-import com.smoothstack.BatchMicroservice.model.User;
+import com.smoothstack.BatchMicroservice.model.generation.Merchant;
+import com.smoothstack.BatchMicroservice.model.generation.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -14,15 +15,26 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(
         properties = {
                 "input.path = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/resources/TestData/test2.csv",
-                "output.path = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/"
+                "output.path.generation = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/Generation/",
+                "output.path.analysis = C:/Projects/Smoothstack/Assignments/Sprints/AlineFinancial/aline-batch-microservice/src/test/ProcessedOutTestFiles/Analysis/"
         })
-public class GeneratorAndCacheTest {
+public class GeneratorTest {
 
     private final UserMap userMap = UserMap.getInstance();
     private final CardMap cardMap = CardMap.getInstance();
     private final MerchantMap merchantMap = MerchantMap.getInstance();
     private final LocationMap locationMap = LocationMap.getInstance();
     private final StateMap stateMap = StateMap.getInstance();
+
+    @AfterEach
+    public void cleanup(){
+        userMap.clearAll();
+        cardMap.clearAll();
+        merchantMap.clearAll();
+        locationMap.clearAll();
+        stateMap.clearAll();
+    }
+
 
     @Test
     public void correctUserGenerationTest(){
@@ -58,7 +70,7 @@ public class GeneratorAndCacheTest {
         assertSame(merchantMap.findOrGenerateMerchant(t).getClass(), Merchant.class);
         assertEquals(1, merchantMap.getGeneratedMerchants().size());
         Merchant merchant = merchantMap.findOrGenerateMerchant(t);
-        assertEquals(merchant.getName(), merchantMap.getGeneratedMerchants().get(t.getMerchant_name()).getName());
+        assertEquals(merchant.getId(), merchantMap.getGeneratedMerchants().get(t.getMerchant_name()).getId());
         merchantMap.getGeneratedMerchants().remove(t.getMerchant_name());
         assertTrue(merchantMap.getGeneratedMerchants().isEmpty());
     }

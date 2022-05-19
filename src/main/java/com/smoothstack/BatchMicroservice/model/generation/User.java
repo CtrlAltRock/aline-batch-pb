@@ -1,5 +1,7 @@
-package com.smoothstack.BatchMicroservice.model;
+package com.smoothstack.BatchMicroservice.model.generation;
 
+import com.smoothstack.BatchMicroservice.model.Transaction;
+import com.smoothstack.BatchMicroservice.model.generation.Card;
 import lombok.*;
 
 import java.util.List;

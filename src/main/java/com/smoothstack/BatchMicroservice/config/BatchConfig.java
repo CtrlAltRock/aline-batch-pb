@@ -2,7 +2,9 @@ package com.smoothstack.BatchMicroservice.config;
 
 import com.smoothstack.BatchMicroservice.model.Transaction;
 import com.smoothstack.BatchMicroservice.processor.*;
-import com.smoothstack.BatchMicroservice.tasklet.*;
+import com.smoothstack.BatchMicroservice.tasklet.CleanUpTasklet;
+import com.smoothstack.BatchMicroservice.tasklet.analysis.*;
+import com.smoothstack.BatchMicroservice.tasklet.generation.*;
 import com.smoothstack.BatchMicroservice.writer.XMLItemWriter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -14,6 +16,7 @@ import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.support.CompositeItemProcessor;
@@ -41,8 +44,11 @@ public class BatchConfig {
     @Value("${input.path}")
     private String inputPath;
 
-    @Value("${output.path}")
-    private String outputPath;
+    @Value("${output.path.generation}")
+    private String outputPathGeneration;
+
+    @Value("${output.path.analysis}")
+    private String outputPathAnalysis;
 
     @Bean
     public Job transactionJob() throws Exception {
@@ -57,124 +63,7 @@ public class BatchConfig {
         return new FlowBuilder<SimpleFlow>("mainFlow")
                 .start(threadedStep())
                 .next(xmlWriterFlow())
-                .build();
-    }
-
-    @Bean
-    public Flow xmlWriterFlow(){
-        return new FlowBuilder<SimpleFlow>("xmlWriterFlow")
-                .split(getTaskExecutor())
-                .add(userWriterFlow(), cardWriterFlow(),
-                        merchantWriterFlow(), locationWriterFlow(),
-                        stateWriterFlow(), analysisFlow())
-                .build();
-    }
-
-    @Bean
-    public Flow userWriterFlow(){
-        return new FlowBuilder<SimpleFlow>("userWriterFlow")
-                .start(userWriter())
-                .build();
-    }
-
-    @Bean
-    public Step userWriter(){
-        return stepsFactory.get("userWriter")
-                .tasklet(new XMLUserWriter(outputPath))
-                .build();
-    }
-
-    @Bean
-    public Flow cardWriterFlow(){
-        return new FlowBuilder<SimpleFlow>("cardWriterFlow")
-                .start(cardWriter())
-                .build();
-    }
-
-    @Bean
-    public Step cardWriter(){
-        return stepsFactory.get("cardWriter")
-                .tasklet(new XMLCardWriter(outputPath))
-                .build();
-    }
-
-    @Bean
-    public Flow merchantWriterFlow(){
-        return new FlowBuilder<SimpleFlow>("merchantWriterFlow")
-                .start(merchantWriter())
-                .build();
-    }
-
-    @Bean
-    public Step merchantWriter(){
-        return stepsFactory.get("merchantWriter")
-                .tasklet(new XMLMerchantWriter(outputPath))
-                .build();
-    }
-    @Bean
-    public Flow locationWriterFlow(){
-        return new FlowBuilder<SimpleFlow>("locationWriterFlow")
-                .start(locationWriter())
-                .build();
-    }
-
-    @Bean
-    public Step locationWriter(){
-        return stepsFactory.get("locationWriter")
-                .tasklet(new XMLLocationWriter(outputPath))
-                .build();
-    }
-
-    @Bean
-    public Flow stateWriterFlow(){
-        return new FlowBuilder<SimpleFlow>("stateWriterFlow")
-                .start(stateWriter())
-                .build();
-    }
-
-    @Bean
-    public Step stateWriter(){
-        return stepsFactory.get("stateWriter")
-                .tasklet(new XMLStateWriter(outputPath))
-                .build();
-    }
-
-
-    @Bean
-    public TaskExecutor getTaskExecutor(){
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(6);
-        threadPoolTaskExecutor.setMaxPoolSize(250);
-        threadPoolTaskExecutor.afterPropertiesSet();
-
-        return threadPoolTaskExecutor;
-    }
-
-    @Bean
-    public Step threadedStep() throws Exception {
-        return stepsFactory.get("transaction step")
-                .<Transaction, Object>chunk(1000)
-                .reader(csvReader())
-                .faultTolerant()
-                .retryLimit(1)
-                .retry(Exception.class)
-                .skipPolicy(new TransactionSkipPolicy())
-                .processor(compositeItemProcessor())
-                .writer(new XMLItemWriter())
-                .taskExecutor(getTaskExecutor())
-                .build();
-    }
-
-    @Bean
-    public Flow analysisFlow(){
-        return new FlowBuilder<SimpleFlow>("analysisFlow")
-                .start(xmlWriterStep())
-                .build();
-    }
-    @Bean
-    public Step xmlWriterStep(){
-        return  stepsFactory.get("xmlWriterStep")
-                .tasklet(new XmlWriterTasklet(outputPath))
+                .next(cleanUpStep())
                 .build();
     }
 
@@ -210,5 +99,229 @@ public class BatchConfig {
         return compositeProcessor;
     }
 
+    @Bean
+    public TaskExecutor getTaskExecutor(){
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(12);
+        threadPoolTaskExecutor.setMaxPoolSize(12);
+        threadPoolTaskExecutor.afterPropertiesSet();
 
+        return threadPoolTaskExecutor;
+    }
+    @Bean
+    public Step threadedStep() throws Exception {
+        return stepsFactory.get("transaction step")
+                .<Transaction, Object>chunk(1000)
+                .reader(csvReader())
+                .faultTolerant()
+                .retryLimit(1)
+                .retry(FlatFileParseException.class)
+                .skipPolicy(new TransactionSkipPolicy())
+                .processor(compositeItemProcessor())
+                .writer(new XMLItemWriter())
+                .taskExecutor(getTaskExecutor())
+                .build();
+    }
+
+    @Bean
+    public Flow xmlWriterFlow(){
+        return new FlowBuilder<SimpleFlow>("xmlWriterFlow")
+                .split(getTaskExecutor())
+                .add(
+                        top5TransactionByZipCodeFlow(),
+                        top10LargestTransactionFlow(),
+                        transactionTypeFlow(),
+                        fraudByYearFlow(),
+                        userBalanceOnce(),
+                        userBalanceOver(),
+                        top5RecurringFlow(),
+                        totalUniqueFlow(),
+                        userWriterFlow(),
+                        cardWriterFlow(),
+                        merchantWriterFlow(),
+                        locationWriterFlow(),
+                        stateWriterFlow()
+                )
+                .build();
+    }
+
+    private Step cleanUpStep() {
+        return stepsFactory.get("cleanUpStep")
+                .tasklet(new CleanUpTasklet())
+                .build();
+    }
+
+    // flows and steps
+    @Bean
+    public Flow userWriterFlow(){
+        return new FlowBuilder<SimpleFlow>("userWriterFlow")
+                .start(userWriter())
+                .build();
+    }
+
+    @Bean
+    public Step userWriter(){
+        return stepsFactory.get("userWriter")
+                .tasklet(new XMLUserWriter(outputPathGeneration))
+                .build();
+    }
+
+    @Bean
+    public Flow cardWriterFlow(){
+        return new FlowBuilder<SimpleFlow>("cardWriterFlow")
+                .start(cardWriter())
+                .build();
+    }
+
+    @Bean
+    public Step cardWriter(){
+        return stepsFactory.get("cardWriter")
+                .tasklet(new XMLCardWriter(outputPathGeneration))
+                .build();
+    }
+
+    @Bean
+    public Flow merchantWriterFlow(){
+        return new FlowBuilder<SimpleFlow>("merchantWriterFlow")
+                .start(merchantWriter())
+                .build();
+    }
+
+    @Bean
+    public Step merchantWriter(){
+        return stepsFactory.get("merchantWriter")
+                .tasklet(new XMLMerchantWriter(outputPathGeneration))
+                .build();
+    }
+    @Bean
+    public Flow locationWriterFlow(){
+        return new FlowBuilder<SimpleFlow>("locationWriterFlow")
+                .start(locationWriter())
+                .build();
+    }
+
+    @Bean
+    public Step locationWriter(){
+        return stepsFactory.get("locationWriter")
+                .tasklet(new XMLLocationWriter(outputPathGeneration))
+                .build();
+    }
+
+    @Bean
+    public Flow stateWriterFlow(){
+        return new FlowBuilder<SimpleFlow>("stateWriterFlow")
+                .start(stateWriter())
+                .build();
+    }
+
+    @Bean
+    public Step stateWriter(){
+        return stepsFactory.get("stateWriter")
+                .tasklet(new XMLStateWriter(outputPathGeneration))
+                .build();
+    }
+
+    @Bean
+    public Flow fraudByYearFlow(){
+        return new FlowBuilder<SimpleFlow>("fraudByYearFlow")
+                .start(fraudByYearStep())
+                .build();
+    }
+    @Bean
+    public Step fraudByYearStep(){
+        return stepsFactory.get("fraudByYearStep")
+                .tasklet(new FraudByYearWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow top5RecurringFlow(){
+        return new FlowBuilder<SimpleFlow>("top5recurring")
+                .start(top5RecurringStep())
+                .build();
+    }
+
+    @Bean Step top5RecurringStep(){
+        return stepsFactory.get("top5RecurringStep")
+                .tasklet(new Top5RecurringWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow totalUniqueFlow(){
+        return new FlowBuilder<SimpleFlow>("totalUnique")
+                .start(totalUniqueStep())
+                .build();
+    }
+
+    @Bean Step totalUniqueStep(){
+        return stepsFactory.get("totalUniqueStep")
+                .tasklet(new TotalUniqueMerchantWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow userBalanceOnce(){
+        return new FlowBuilder<SimpleFlow>("userBalanceOnce")
+                .start(userBalanceOnceStep())
+                .build();
+    }
+
+    @Bean Step userBalanceOnceStep(){
+        return stepsFactory.get("userBalanceOnceStep")
+                .tasklet(new InsufficientBalanceOnceWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow userBalanceOver(){
+        return new FlowBuilder<SimpleFlow>("userBalanceOver")
+                .start(userBalanceOverStep())
+                .build();
+    }
+
+    @Bean Step userBalanceOverStep(){
+        return stepsFactory.get("userBalanceOverStep")
+                .tasklet(new InsufficientBalanceOverWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow transactionTypeFlow(){
+        return new FlowBuilder<SimpleFlow>("transactionTypeFlow")
+                .start(transactionTypeStep())
+                .build();
+    }
+
+    @Bean Step transactionTypeStep(){
+        return stepsFactory.get("transactionTypeStep")
+                .tasklet(new TransactionTypeWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow top10LargestTransactionFlow(){
+        return new FlowBuilder<SimpleFlow>("top10LargestTransactionFlow")
+                .start(top10LargestTransactionStep())
+                .build();
+    }
+
+    @Bean Step top10LargestTransactionStep(){
+        return stepsFactory.get("top10LargestTransactionStep")
+                .tasklet(new Top10LargestTransactionWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow top5TransactionByZipCodeFlow(){
+        return new FlowBuilder<SimpleFlow>("top5TransactionByZipCodeFlow")
+                .start(top5TransactionByZipCodeStep())
+                .build();
+    }
+
+    @Bean Step top5TransactionByZipCodeStep(){
+        return stepsFactory.get("top5TransactionByZipCodeStep")
+                .tasklet(new Top5TransactionsZipcodeWriter(outputPathAnalysis))
+                .build();
+    }
 }
