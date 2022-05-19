@@ -57,6 +57,7 @@ public class AnalysisTest {
                 t1.setCard(0L);
                 t1.setAmount("$24.64");
                 t1.setMethod("Swipe");
+                t1.setMerchant_zip("12345.0");
 
                 t2.setYear(2022);
                 t2.setFraud("No");
@@ -66,6 +67,7 @@ public class AnalysisTest {
                 t2.setCard(2L);
                 t2.setAmount("$543.34");
                 t2.setMethod("Chip");
+                t2.setMerchant_zip("12345.0");
 
                 t3.setYear(2022);
                 t3.setFraud("Yes");
@@ -75,6 +77,7 @@ public class AnalysisTest {
                 t3.setCard(1L);
                 t3.setAmount("$25.25");
                 t3.setMethod("Online");
+                t3.setMerchant_zip("12346.0");
 
                 t4.setYear(2022);
                 t4.setFraud("No");
@@ -84,6 +87,7 @@ public class AnalysisTest {
                 t4.setCard(1L);
                 t4.setAmount("$25.25");
                 t4.setMethod("Online");
+                t4.setMerchant_zip("12346.0");
 
                 ts.add(t1);
                 ts.add(t2);
@@ -117,36 +121,50 @@ public class AnalysisTest {
         }
 
         @Test
-        public void correctYearAndType() throws Exception {
-
+        public void correctYearFraud(){
                 // fraud
                 assertEquals(2, tMap.getSyncTransactionByYear().size());
                 assertEquals(1, tMap.getSyncTransactionByYear().get(2021));
                 assertEquals(1, tMap.getSyncFraudByYear().size());
                 assertEquals(1, tMap.getSyncFraudByYear().get(2022));
+        }
 
+        @Test
+        public void transactionType(){
                 // type
                 assertEquals(3, tMap.getTransactionType().size());
+        }
 
+        @Test
+        public void top10Largest(){
                 // top 10 largest
-                System.out.println(tMap.getSyncTop10LargestTransaction());
                 assertEquals(4, tMap.getSyncTop10LargestTransaction().size());
         }
 
         @Test
-        public void insufficientBalance(){
+        public void top5ByZip(){
+                // top 5 by zip
+                assertEquals(2, tMap.getSyncZipCodeTransaction().size());
+                assertEquals(2, tMap.getSyncZipCodeTransaction().get("12346.0"));
+                assertEquals(2, tMap.getSyncZipCodeTransaction().get("12345.0"));
+        }
 
+        @Test
+        public void insufficientBalance(){
+                // insufficient balance
                 assertEquals(2, userMap.getInsufficientBalanceByUser().size());
                 assertEquals(1, userMap.getInsufficientBalanceByUser().get(1L));
                 assertEquals(2, userMap.getInsufficientBalanceByUser().get(2L));
         }
 
         @Test
-        public void uniqueMerchantAndRecurringTransaction(){
-
+        public void uniqueMerchant(){
                 // unique
                 assertEquals(3, merchantMap.getGeneratedMerchants().size());
 
+        }
+
+        public void recurringTransaction(){
                 // recurring
                 assertEquals(3 , merchantMap.getRecurringTransaction().size());
                 assertEquals(2, merchantMap.getRecurringTransaction().get("1234567890").get(getTop5().toString()));

@@ -128,6 +128,8 @@ public class BatchConfig {
         return new FlowBuilder<SimpleFlow>("xmlWriterFlow")
                 .split(getTaskExecutor())
                 .add(
+                        top5TransactionByZipCodeFlow(),
+                        top10LargestTransactionFlow(),
                         transactionTypeFlow(),
                         fraudByYearFlow(),
                         userBalanceOnce(),
@@ -148,7 +150,7 @@ public class BatchConfig {
                 .tasklet(new CleanUpTasklet())
                 .build();
     }
-    
+
     // flows and steps
     @Bean
     public Flow userWriterFlow(){
@@ -294,6 +296,32 @@ public class BatchConfig {
     @Bean Step transactionTypeStep(){
         return stepsFactory.get("transactionTypeStep")
                 .tasklet(new TransactionTypeWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow top10LargestTransactionFlow(){
+        return new FlowBuilder<SimpleFlow>("top10LargestTransactionFlow")
+                .start(top10LargestTransactionStep())
+                .build();
+    }
+
+    @Bean Step top10LargestTransactionStep(){
+        return stepsFactory.get("top10LargestTransactionStep")
+                .tasklet(new Top10LargestTransactionWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow top5TransactionByZipCodeFlow(){
+        return new FlowBuilder<SimpleFlow>("top5TransactionByZipCodeFlow")
+                .start(top5TransactionByZipCodeStep())
+                .build();
+    }
+
+    @Bean Step top5TransactionByZipCodeStep(){
+        return stepsFactory.get("top5TransactionByZipCodeStep")
+                .tasklet(new Top5TransactionsZipcodeWriter(outputPathAnalysis))
                 .build();
     }
 }
