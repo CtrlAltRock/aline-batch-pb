@@ -212,6 +212,43 @@ class BatchTests {
 	}
 
 	@Test
+	public void whenStep14Executed_thenSuccess() {
+		// when
+		JobExecution jobExecution = jobLauncherTestUtils.launchStep("top5TransactionByCityStep");
+		Collection<StepExecution> actualStepExecutions = jobExecution.getStepExecutions();
+		ExitStatus actualExitStatus = jobExecution.getExitStatus();
+
+		// then
+		assertThat(actualStepExecutions.size(), is(1));
+		assertThat(actualExitStatus.getExitCode(), is("COMPLETED"));
+	}
+
+	@Test
+	public void whenStep15Executed_thenSuccess() {
+		// when
+		JobExecution jobExecution = jobLauncherTestUtils.launchStep("transactionsByStateNoFraudStep");
+		Collection<StepExecution> actualStepExecutions = jobExecution.getStepExecutions();
+		ExitStatus actualExitStatus = jobExecution.getExitStatus();
+
+		// then
+		assertThat(actualStepExecutions.size(), is(1));
+		assertThat(actualExitStatus.getExitCode(), is("COMPLETED"));
+	}
+
+	@Test
+	public void whenStep16Executed_thenSuccess() {
+		// when
+		JobExecution jobExecution = jobLauncherTestUtils.launchStep("over100AndAfter8PMByZipCodeStep");
+		Collection<StepExecution> actualStepExecutions = jobExecution.getStepExecutions();
+		ExitStatus actualExitStatus = jobExecution.getExitStatus();
+
+		// then
+		assertThat(actualStepExecutions.size(), is(1));
+		assertThat(actualExitStatus.getExitCode(), is("COMPLETED"));
+	}
+
+
+	@Test
 	public void whenStepCleanupExecuted_thenSuccess() {
 		// when
 		JobExecution jobExecution = jobLauncherTestUtils.launchStep("cleanUpStep");

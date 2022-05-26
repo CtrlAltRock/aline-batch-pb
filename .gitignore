@@ -37,3 +37,4 @@ build/
 /src/main/ProcessedOutFiles/Generation/*.xml
 /src/test/ProcessedOutTestFiles/Analysis/*.xml
 /src/test/ProcessedOutTestFiles/Generation/*.xml
+/src/main/java/com/smoothstack/BatchMicroservice/reader/
