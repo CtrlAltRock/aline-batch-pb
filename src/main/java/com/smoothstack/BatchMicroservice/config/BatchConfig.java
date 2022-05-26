@@ -114,8 +114,8 @@ public class BatchConfig {
                 .<Transaction, Object>chunk(1000)
                 .reader(csvReader())
                 .faultTolerant()
-                .retryLimit(1)
                 .retry(FlatFileParseException.class)
+                .retryLimit(1)
                 .skipPolicy(new TransactionSkipPolicy())
                 .processor(compositeItemProcessor())
                 .writer(new XMLItemWriter())
@@ -128,6 +128,9 @@ public class BatchConfig {
         return new FlowBuilder<SimpleFlow>("xmlWriterFlow")
                 .split(getTaskExecutor())
                 .add(
+                        over100AndAfter8PMByZipCodeFlow(),
+                        transactionsByStateNoFraudFlow(),
+                        top5TransactionByCityFlow(),
                         top5TransactionByZipCodeFlow(),
                         top10LargestTransactionFlow(),
                         transactionTypeFlow(),
@@ -322,6 +325,45 @@ public class BatchConfig {
     @Bean Step top5TransactionByZipCodeStep(){
         return stepsFactory.get("top5TransactionByZipCodeStep")
                 .tasklet(new Top5TransactionsZipcodeWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow top5TransactionByCityFlow(){
+        return new FlowBuilder<SimpleFlow>("top5TransactionByCityFlow")
+                .start(top5TransactionByCityStep())
+                .build();
+    }
+
+    @Bean Step top5TransactionByCityStep(){
+        return stepsFactory.get("top5TransactionByCityStep")
+                .tasklet(new Top5TransactionsCityWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow transactionsByStateNoFraudFlow(){
+        return new FlowBuilder<SimpleFlow>("transactionsByStateNoFraudFlow")
+                .start(transactionsByStateNoFraudStep())
+                .build();
+    }
+
+    @Bean Step transactionsByStateNoFraudStep(){
+        return stepsFactory.get("transactionsByStateNoFraudStep")
+                .tasklet(new TransactionsByStateNoFraudWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow over100AndAfter8PMByZipCodeFlow(){
+        return new FlowBuilder<SimpleFlow>("over100AndAfter8PMByZipCodeFlow")
+                .start(over100AndAfter8PMByZipCodeStep())
+                .build();
+    }
+
+    @Bean Step over100AndAfter8PMByZipCodeStep(){
+        return stepsFactory.get("over100AndAfter8PMByZipCodeStep")
+                .tasklet(new Over100AndAfter8PMByZipCode(outputPathAnalysis))
                 .build();
     }
 }

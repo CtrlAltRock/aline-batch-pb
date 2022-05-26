@@ -15,7 +15,7 @@ public class AnalysisProcessor implements ItemProcessor<Transaction, Object> {
         // set up number of transactions by year
         tMap.setTransactionByYear(item.getYear());
 
-        // set up error by insufficient balance
+        // set up number of fraud by year
         if (item.getFraud().equalsIgnoreCase(YES)) {
             tMap.setFraudByYear(item.getYear());
         }
@@ -30,6 +30,12 @@ public class AnalysisProcessor implements ItemProcessor<Transaction, Object> {
         if (!item.getMerchant_zip().isBlank()) {
             tMap.setZipcodeTransaction(item);
         }
+
+        // greater than $100, after 8pm, by zip or online
+        if(Float.parseFloat(item.getAmount().replace("$", "")) > 100){
+            tMap.checkAndSet8pmOver100(item);
+        }
+
         return item;
     }
 }

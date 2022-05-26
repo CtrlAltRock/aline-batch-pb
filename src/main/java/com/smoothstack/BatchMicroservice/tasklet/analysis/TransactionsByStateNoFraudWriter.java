@@ -10,39 +10,37 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.FileWriter;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Top5TransactionsZipcodeWriter implements Tasklet {
-
-    TransactionMap tMap = TransactionMap.getInstance();
+public class TransactionsByStateNoFraudWriter implements Tasklet {
+    private final TransactionMap tMap = TransactionMap.getInstance();
 
     private final String path;
 
-    public Top5TransactionsZipcodeWriter(String path) {
+    public TransactionsByStateNoFraudWriter(String path) {
         this.path = path;
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         FileGenerator fg = new FileGenerator();
-        fg.xmlHeader(path+"Top5TransactionsByZipCode.xml", "Top5TransactionsByZipCode");
-        FileWriter fw = new FileWriter(path+"Top5TransactionsByZipCode.xml", true);
+        fg.xmlHeader(path + "TransactionsByStateNoFraud.xml", "TransactionsByStateNoFraud");
+        FileWriter fw = new FileWriter(path + "TransactionsByStateNoFraud.xml", true);
         XStream xs = new XStream();
-        xs.alias("TransactionsByZipCode", TransactionsByZip.class);
+        xs.alias("TransactionsByState", TransactionsByZip.class);
+        xs.aliasField("state", TransactionsByZip.class, "zipcode");
         StringBuilder sb = new StringBuilder();
-        List<TransactionsByZip> collect = tMap.getSyncZipCodeTransaction().entrySet()
+        List<TransactionsByZip> collect = tMap.getSyncTransactionByStateNoFraud().entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(5)
                 .map(n -> new TransactionsByZip(n.getKey(), n.getValue()))
                 .collect(Collectors.toList());
-        collect.forEach(z -> sb.append(xs.toXML(z)));
+        collect.forEach(z -> {
+            sb.append(xs.toXML(z));
+        });
         fw.append(sb);
         fw.close();
-        fg.xmlCloser(path+"Top5TransactionsByZipCode.xml", "Top5TransactionsByZipCode");
+        fg.xmlCloser(path + "TransactionsByStateNoFraud.xml", "TransactionsByStateNoFraud");
         return null;
     }
 }

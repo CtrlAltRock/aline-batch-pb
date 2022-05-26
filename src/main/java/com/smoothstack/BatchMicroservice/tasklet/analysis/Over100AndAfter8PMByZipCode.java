@@ -10,39 +10,36 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.FileWriter;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Top5TransactionsZipcodeWriter implements Tasklet {
+public class Over100AndAfter8PMByZipCode implements Tasklet {
 
     TransactionMap tMap = TransactionMap.getInstance();
 
     private final String path;
 
-    public Top5TransactionsZipcodeWriter(String path) {
+    public Over100AndAfter8PMByZipCode(String path) {
         this.path = path;
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         FileGenerator fg = new FileGenerator();
-        fg.xmlHeader(path+"Top5TransactionsByZipCode.xml", "Top5TransactionsByZipCode");
-        FileWriter fw = new FileWriter(path+"Top5TransactionsByZipCode.xml", true);
+        fg.xmlHeader(path+"Over100AndAfter8PMByZipCode.xml", "Over100AndAfter8PMByZipCode");
+        FileWriter fw = new FileWriter(path+"Over100AndAfter8PMByZipCode.xml", true);
         XStream xs = new XStream();
         xs.alias("TransactionsByZipCode", TransactionsByZip.class);
         StringBuilder sb = new StringBuilder();
-        List<TransactionsByZip> collect = tMap.getSyncZipCodeTransaction().entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(5)
+        List<TransactionsByZip> collect = tMap.getSyncOver100AndAfter8pm().entrySet().stream()
                 .map(n -> new TransactionsByZip(n.getKey(), n.getValue()))
                 .collect(Collectors.toList());
-        collect.forEach(z -> sb.append(xs.toXML(z)));
+        collect.forEach(z -> {
+            sb.append(xs.toXML(z));
+        });
         fw.append(sb);
         fw.close();
-        fg.xmlCloser(path+"Top5TransactionsByZipCode.xml", "Top5TransactionsByZipCode");
+        fg.xmlCloser(path+"Over100AndAfter8PMByZipCode.xml", "Over100AndAfter8PMByZipCode");
         return null;
     }
 }

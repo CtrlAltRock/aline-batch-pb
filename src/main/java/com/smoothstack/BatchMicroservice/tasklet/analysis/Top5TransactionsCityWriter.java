@@ -15,25 +15,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Top5TransactionsZipcodeWriter implements Tasklet {
+public class Top5TransactionsCityWriter implements Tasklet {
 
     TransactionMap tMap = TransactionMap.getInstance();
 
     private final String path;
 
-    public Top5TransactionsZipcodeWriter(String path) {
+    public Top5TransactionsCityWriter(String path) {
         this.path = path;
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         FileGenerator fg = new FileGenerator();
-        fg.xmlHeader(path+"Top5TransactionsByZipCode.xml", "Top5TransactionsByZipCode");
-        FileWriter fw = new FileWriter(path+"Top5TransactionsByZipCode.xml", true);
+        fg.xmlHeader(path+"Top5TransactionsByCity.xml", "Top5TransactionsByCity");
+        FileWriter fw = new FileWriter(path+"Top5TransactionsByCity.xml", true);
         XStream xs = new XStream();
-        xs.alias("TransactionsByZipCode", TransactionsByZip.class);
+        xs.alias("TransactionsByCity", TransactionsByZip.class);
+        xs.aliasField("city", TransactionsByZip.class, "zipcode");
         StringBuilder sb = new StringBuilder();
-        List<TransactionsByZip> collect = tMap.getSyncZipCodeTransaction().entrySet()
+        List<TransactionsByZip> collect = tMap.getSyncCityTransaction().entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(5)
@@ -42,7 +43,7 @@ public class Top5TransactionsZipcodeWriter implements Tasklet {
         collect.forEach(z -> sb.append(xs.toXML(z)));
         fw.append(sb);
         fw.close();
-        fg.xmlCloser(path+"Top5TransactionsByZipCode.xml", "Top5TransactionsByZipCode");
+        fg.xmlCloser(path+"Top5TransactionsByCity.xml", "Top5TransactionsByCity");
         return null;
     }
 }

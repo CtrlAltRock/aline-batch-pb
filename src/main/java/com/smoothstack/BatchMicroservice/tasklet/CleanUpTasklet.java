@@ -7,12 +7,12 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 public class CleanUpTasklet implements Tasklet {
-    private TransactionMap tMap = TransactionMap.getInstance();
-    private MerchantMap mMap = MerchantMap.getInstance();
-    private StateMap sMap = StateMap.getInstance();
-    private LocationMap lMap = LocationMap.getInstance();
-    private UserMap uMap = UserMap.getInstance();
-    private CardMap cMap = CardMap.getInstance();
+    private final TransactionMap tMap = TransactionMap.getInstance();
+    private final MerchantMap mMap = MerchantMap.getInstance();
+    private final StateMap sMap = StateMap.getInstance();
+    private final LocationMap lMap = LocationMap.getInstance();
+    private final UserMap uMap = UserMap.getInstance();
+    private final CardMap cMap = CardMap.getInstance();
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         tMap.clearAll();

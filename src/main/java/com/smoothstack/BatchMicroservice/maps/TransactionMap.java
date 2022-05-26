@@ -23,10 +23,13 @@ public class TransactionMap {
     private final List<Transaction> top10LargestTransaction = new ArrayList<>();
     private final List<Transaction> syncTop10LargestTransaction = Collections.synchronizedList(top10LargestTransaction);
     private final HashMap<String, Integer> zipCodeTransaction = new HashMap<>();
-
-
-
     private final Map<String, Integer> syncZipCodeTransaction = Collections.synchronizedMap(zipCodeTransaction);
+    private final HashMap<String, Integer> cityTransaction = new HashMap<>();
+    private final Map<String, Integer> syncCityTransaction = Collections.synchronizedMap(cityTransaction);
+    private final HashMap<String, Integer> transactionByStateNoFraud = new HashMap<>();
+    private final Map<String, Integer> syncTransactionByStateNoFraud = Collections.synchronizedMap(transactionByStateNoFraud);
+    private final HashMap<String, Integer> over100AndAfter8pm = new HashMap<>();
+    private final Map<String, Integer> syncOver100AndAfter8pm = Collections.synchronizedMap(over100AndAfter8pm);
 
 
     public Map<Integer, Integer> getSyncTransactionByYear() {
@@ -63,11 +66,21 @@ public class TransactionMap {
     }
 
     public void setTransactionByYear(Integer year) {
-        synchronized (this) {
+        synchronized (syncTransactionByYear) {
             if (!syncTransactionByYear.containsKey(year)) {
                 syncTransactionByYear.put(year, 1);
             } else {
                 syncTransactionByYear.replace(year, syncTransactionByYear.get(year) + 1);
+            }
+        }
+    }
+
+    public void setTransactionByState(String merchant_state) {
+        synchronized (syncTransactionByStateNoFraud) {
+            if (!syncTransactionByStateNoFraud.containsKey(merchant_state)) {
+                syncTransactionByStateNoFraud.put(merchant_state, 1);
+            } else {
+                syncTransactionByStateNoFraud.replace(merchant_state, syncTransactionByStateNoFraud.get(merchant_state) + 1);
             }
         }
     }
@@ -77,7 +90,7 @@ public class TransactionMap {
     }
 
     public void setFraudByYear(Integer year) {
-        synchronized (this) {
+        synchronized (syncFraudByYear) {
             if (!syncFraudByYear.containsKey(year)) {
                 syncFraudByYear.put(year, 1);
             } else {
@@ -97,8 +110,36 @@ public class TransactionMap {
         }
     }
 
+    public void setCityTransaction(Transaction item){
+        synchronized (syncCityTransaction) {
+            if(!syncCityTransaction.containsKey(item.getMerchant_city())) {
+                syncCityTransaction.put(item.getMerchant_city(), 1);
+            } else {
+                Integer amount = syncCityTransaction.get(item.getMerchant_city()) + 1;
+                syncCityTransaction.replace(item.getMerchant_city(), amount);
+            }
+        }
+    }
+
     public void setTransactionType(String method) {
         syncTransactionType.add(method);
+    }
+
+    public void checkAndSet8pmOver100(Transaction item) {
+        int i = Integer.parseInt(item.getTime().replace(":", ""));
+        if(i>2000){
+            synchronized (syncOver100AndAfter8pm){
+                if(!syncOver100AndAfter8pm.containsKey(item.getMerchant_zip())){
+                    syncOver100AndAfter8pm.put(item.getMerchant_zip(), 1);
+                } else {
+                    syncOver100AndAfter8pm.replace(item.getMerchant_zip(), syncOver100AndAfter8pm.get(item.getMerchant_zip())+1);
+                }
+            }
+        }
+    }
+
+    public Map<String, Integer> getSyncOver100AndAfter8pm() {
+        return syncOver100AndAfter8pm;
     }
 
     public Set<String> getTransactionType() {
@@ -113,11 +154,21 @@ public class TransactionMap {
         return syncZipCodeTransaction;
     }
 
+    public Map<String, Integer> getSyncCityTransaction() {
+        return syncCityTransaction;
+    }
+
+    public Map<String, Integer> getSyncTransactionByStateNoFraud() {
+        return syncTransactionByStateNoFraud;
+    }
+
     public void clearAll() {
         syncTransactionByYear.clear();
         syncFraudByYear.clear();
         syncTransactionType.clear();
         syncTop10LargestTransaction.clear();
         syncZipCodeTransaction.clear();
+        syncCityTransaction.clear();
+        syncTransactionByStateNoFraud.clear();
     }
 }

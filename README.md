@@ -28,7 +28,7 @@ In today's big data climate, parsing large amounts of data accurately and effici
     * If you'd rather run from a JAR you can use "mvn package clean" and run the JAR from the target subdirectory
 
 ## Design
-![Batch Microservice Design](https://github.com/CtrlAltRock/aline-batch-pb/blob/dev/AlineBatchDesignV2.png)
+![Batch Microservice Design](https://github.com/CtrlAltRock/aline-batch-pb/blob/dev/AlineBatchDesignV3.png)
 
 ## Credits
 
