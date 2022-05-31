@@ -162,6 +162,9 @@ public class TransactionMap {
         return syncTransactionByStateNoFraud;
     }
 
+
+
+
     public void clearAll() {
         syncTransactionByYear.clear();
         syncFraudByYear.clear();
