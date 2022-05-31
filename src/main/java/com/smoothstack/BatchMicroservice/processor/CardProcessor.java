@@ -26,6 +26,7 @@ public class CardProcessor implements ItemProcessor<Transaction, Object> {
         if(!item.getFraud().equalsIgnoreCase(YES) && !item.getMerchant_state().isBlank()){
             tMap.setTransactionByState(item.getMerchant_state());
         }
+
         return item;
     }
 

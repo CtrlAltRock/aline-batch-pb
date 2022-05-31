@@ -208,4 +208,18 @@ public class AnalysisTest {
                 assertEquals(1, tMap.getSyncOver100AndAfter8pm().size());
                 assertEquals(1, tMap.getSyncOver100AndAfter8pm().get("12345.0"));
         }
+
+        @Test
+        public void deposits(){
+                // setup
+                Transaction t = new Transaction();
+                t.setUser(4L);
+                t.setAmount("$-21.50");
+                t.setErrors("");
+                userProcessor.process(t);
+
+                // deposits
+                assertEquals(1, userMap.getSyncDeposits().size());
+                assertTrue(userMap.getSyncDeposits().containsKey(4L));
+        }
 }
