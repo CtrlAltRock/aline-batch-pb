@@ -54,6 +54,7 @@ public class AnalysisTest {
                 t1.setUser(0L);
                 t1.setCard(0L);
                 t1.setYear(2021);
+                t1.setMonth(1);
                 t1.setAmount("$24.64");
                 t1.setTime("21:00");
                 t1.setMethod("Swipe");
@@ -67,6 +68,7 @@ public class AnalysisTest {
                 t2.setUser(1L);
                 t2.setCard(2L);
                 t2.setYear(2022);
+                t2.setMonth(2);
                 t2.setAmount("$543.34");
                 t2.setTime("21:00");
                 t2.setMethod("Chip");
@@ -80,6 +82,7 @@ public class AnalysisTest {
                 t3.setUser(2L);
                 t3.setCard(1L);
                 t3.setYear(2022);
+                t3.setMonth(4);
                 t3.setAmount("$25.25");
                 t3.setTime("21:00");
                 t3.setMethod("Online");
@@ -93,6 +96,7 @@ public class AnalysisTest {
                 t4.setUser(2L);
                 t4.setCard(1L);
                 t4.setYear(2022);
+                t4.setMonth(5);
                 t4.setAmount("$25.25");
                 t4.setTime("21:00");
                 t4.setMethod("Online");
@@ -221,5 +225,13 @@ public class AnalysisTest {
                 // deposits
                 assertEquals(1, userMap.getSyncDeposits().size());
                 assertTrue(userMap.getSyncDeposits().containsKey(4L));
+        }
+
+        @Test
+        public void bottom5MonthsOnlineTransactions(){
+                // bottom 5 months online transactions
+                assertEquals(2, tMap.getSyncOnlineByMonth().size());
+                assertEquals(1, tMap.getSyncOnlineByMonth().get(4));
+                assertEquals(1, tMap.getSyncOnlineByMonth().get(5));
         }
 }

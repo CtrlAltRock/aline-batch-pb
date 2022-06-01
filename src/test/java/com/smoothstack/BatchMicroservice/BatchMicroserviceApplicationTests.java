@@ -260,6 +260,18 @@ class BatchTests {
 	}
 
 	@Test
+	public void whenStep18Executed_thenSuccess() {
+		// when
+		JobExecution jobExecution = jobLauncherTestUtils.launchStep("bottom5OnlineTransactionsByMonthStep");
+		Collection<StepExecution> actualStepExecutions = jobExecution.getStepExecutions();
+		ExitStatus actualExitStatus = jobExecution.getExitStatus();
+
+		// then
+		assertThat(actualStepExecutions.size(), is(1));
+		assertThat(actualExitStatus.getExitCode(), is("COMPLETED"));
+	}
+
+	@Test
 	public void whenStepCleanupExecuted_thenSuccess() {
 		// when
 		JobExecution jobExecution = jobLauncherTestUtils.launchStep("cleanUpStep");
