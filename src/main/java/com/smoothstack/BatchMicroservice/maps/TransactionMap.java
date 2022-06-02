@@ -30,14 +30,18 @@ public class TransactionMap {
     private final Map<String, Integer> syncTransactionByStateNoFraud = Collections.synchronizedMap(transactionByStateNoFraud);
     private final HashMap<String, Integer> over100AndAfter8pm = new HashMap<>();
     private final Map<String, Integer> syncOver100AndAfter8pm = Collections.synchronizedMap(over100AndAfter8pm);
+    private final HashMap<Integer, Integer> onlineByMonth = new HashMap<>();
+    private final Map<Integer, Integer> syncOnlineByMonth = Collections.synchronizedMap(onlineByMonth);
 
 
-    public Map<Integer, Integer> getSyncTransactionByYear() {
-        return syncTransactionByYear;
-    }
-
-    public Map<Integer, Integer> getSyncFraudByYear() {
-        return syncFraudByYear;
+    public void setMonthTransaction(Integer month) {
+        synchronized (syncOnlineByMonth){
+            if (!syncOnlineByMonth.containsKey(month)) {
+                syncOnlineByMonth.put(month, 1);
+            } else {
+                syncOnlineByMonth.replace(month, syncOnlineByMonth.get(month) + 1);
+            }
+        }
     }
 
     public void setTopTenLargest(Transaction item) {
@@ -137,6 +141,13 @@ public class TransactionMap {
             }
         }
     }
+    public Map<Integer, Integer> getSyncTransactionByYear() {
+        return syncTransactionByYear;
+    }
+
+    public Map<Integer, Integer> getSyncFraudByYear() {
+        return syncFraudByYear;
+    }
 
     public Map<String, Integer> getSyncOver100AndAfter8pm() {
         return syncOver100AndAfter8pm;
@@ -162,7 +173,9 @@ public class TransactionMap {
         return syncTransactionByStateNoFraud;
     }
 
-
+    public Map<Integer, Integer> getSyncOnlineByMonth() {
+        return syncOnlineByMonth;
+    }
 
 
     public void clearAll() {
@@ -173,5 +186,6 @@ public class TransactionMap {
         syncZipCodeTransaction.clear();
         syncCityTransaction.clear();
         syncTransactionByStateNoFraud.clear();
+        syncOnlineByMonth.clear();
     }
 }

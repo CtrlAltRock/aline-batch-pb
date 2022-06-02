@@ -17,9 +17,13 @@ public class CardProcessor implements ItemProcessor<Transaction, Object> {
     public Transaction process(Transaction item) {
         cardMap.findOrGenerateCard(item.getUser(), item.getCard());
 
-        //top 5 per city
+
         if (!item.getMerchant_city().trim().equalsIgnoreCase(ONLINE)) {
+            //top 5 per city
             tMap.setCityTransaction(item);
+        } else {
+            // online transactions by month
+            tMap.setMonthTransaction(item.getMonth());
         }
 
         //no fraud by state

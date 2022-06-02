@@ -128,6 +128,7 @@ public class BatchConfig {
         return new FlowBuilder<SimpleFlow>("xmlWriterFlow")
                 .split(getTaskExecutor())
                 .add(
+                        bottom5OnlineTransactionsByMonthFlow(),
                         depositsFlow(),
                         over100AndAfter8PMByZipCodeFlow(),
                         transactionsByStateNoFraudFlow(),
@@ -378,6 +379,19 @@ public class BatchConfig {
     @Bean Step depositsStep(){
         return stepsFactory.get("depositsStep")
                 .tasklet(new DepositsWriter(outputPathAnalysis))
+                .build();
+    }
+
+    @Bean
+    public Flow bottom5OnlineTransactionsByMonthFlow(){
+        return new FlowBuilder<SimpleFlow>("bottom5OnlineTransactionsByMonthFlow")
+                .start(bottom5OnlineTransactionsByMonthStep())
+                .build();
+    }
+
+    @Bean Step bottom5OnlineTransactionsByMonthStep(){
+        return stepsFactory.get("bottom5OnlineTransactionsByMonthStep")
+                .tasklet(new Bottom5OnlineTransactionsByMonth(outputPathAnalysis))
                 .build();
     }
 }
